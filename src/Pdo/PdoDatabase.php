@@ -91,16 +91,12 @@ class PdoDatabase implements DatabaseInterface
      * @param string $table
      * @param array[] $dataArrays (each an array of key => value pairs)
      *
-     * @return int|null insert id if only one insert, null if multiple inserts
+     * @return int insert id if only one insert, insert id of first if multiple inserts
      */
     public function insert(string $table, array ...$dataArrays)
     {
         $querySegment = $this->createInsertSql($table, ...$dataArrays);
         $result = $this->query($querySegment->getSql(), $querySegment->getParameters());
-
-        if (count($dataArrays) > 1) {
-            return null;
-        }
 
         return $this->lastInsertId();
     }
