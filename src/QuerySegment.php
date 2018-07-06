@@ -51,9 +51,10 @@ final class QuerySegment
         return $query;
     }
 
-    public static function fieldIn($field, $values)
+    public static function fieldIn(string $field, array $values, string $tablePrefix = '')
     {
-        $sql = '`' . $field . '` IN (';
+        $sql = empty($tablePrefix) ? '' : '`' . $tablePrefix . '`.';
+        $sql .= '`' . $field . '` IN (';
         $sql .= implode(",", array_fill(0, count($values), '?'));
         $sql .= ')';
 
