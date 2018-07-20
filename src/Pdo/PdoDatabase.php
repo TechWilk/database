@@ -26,6 +26,10 @@ class PdoDatabase implements DatabaseInterface
         '<',
         '<=',
         '!=',
+
+        // modifiers
+        '+',
+        '-',
     ];
 
     protected $pdo;
@@ -283,6 +287,11 @@ class PdoDatabase implements DatabaseInterface
                 case 'IS':
                 case 'IS NOT':
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' NULL';
+                    break;
+                case '+':
+                case '-':
+                    $sqlSegments[] = $this->secureTableField($field) . ' = ' . $this->secureTableField($field) . ' ' . $equator . ' ?';
+                    $parameters[] = $value;
                     break;
                 default;
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
