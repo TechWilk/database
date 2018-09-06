@@ -33,6 +33,8 @@ class PdoDatabase implements DatabaseInterface
     ];
 
     protected $pdo;
+    private $logQueries = false;
+    private $queries = [];
 
     public function __construct(string $host, string $database, string $username, string $password)
     {
@@ -64,11 +66,7 @@ class PdoDatabase implements DatabaseInterface
      */
     public function query(string $sql, array $params = []): DatabaseResultInterface
     {
-        if (empty($params)) {
-            $stmt = $this->pdo->query($sql);
-
-            return new PdoDatabaseResult($stmt);
-        }
+        $startTime = microtime(true);
 
         $stmt = $this->pdo->prepare($sql);
 
@@ -85,6 +83,13 @@ class PdoDatabase implements DatabaseInterface
         }
 
         $stmt->execute();
+
+        if ($this->logQueries) {
+            $this->queries[] = [
+                'sql' => $sql,
+                'time' => microtime(true) - $startTime,
+            ];
+        }
 
         return new PdoDatabaseResult($stmt);
     }
@@ -351,5 +356,12 @@ class PdoDatabase implements DatabaseInterface
     public function lastInsertId(): int
     {
         return (int)$this->pdo->lastInsertId();
+    }
+
+    public function __destruct()
+    {
+        if ($this->logQueries) {
+            var_dump($this->queries);
+        }
     }
 }
