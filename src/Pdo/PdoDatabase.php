@@ -75,6 +75,12 @@ class PdoDatabase implements DatabaseInterface
             if (is_int($param)) {
                 $stmt->bindValue($i, $param, PDO::PARAM_INT);
 
+            } elseif (is_bool($param)) {
+                $stmt->bindValue($i, $param, PDO::PARAM_BOOL);
+
+            } elseif (is_null($param)) {
+                $stmt->bindValue($i, $param, PDO::PARAM_NULL);
+
             } else {
                 $stmt->bindValue($i, $param, PDO::PARAM_STR);
             }
