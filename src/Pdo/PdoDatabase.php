@@ -38,7 +38,7 @@ class PdoDatabase implements DatabaseInterface
 
     public function __construct(string $host, string $database, string $username, string $password)
     {
-        $dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';charset=UTF8';
+        $dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';charset=utf8mb4';
 
         $this->pdo = new PDO($dsn, $username, $password, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
