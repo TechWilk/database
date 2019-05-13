@@ -36,12 +36,19 @@ class PdoDatabase implements DatabaseInterface
     private $logQueries = false;
     private $queries = [];
 
-    public function __construct(string $host, string $database, string $username, string $password)
+    public function __construct(
+        string $host,
+        string $database,
+        string $username,
+        string $password,
+        bool $usePersistentConnection = false
+    )
     {
         $dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';charset=utf8mb4';
 
         $this->pdo = new PDO($dsn, $username, $password, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_PERSISTENT => $usePersistentConnection,
         ]);
     }
 

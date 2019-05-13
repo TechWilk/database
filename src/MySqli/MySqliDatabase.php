@@ -33,8 +33,17 @@ class MySqliDatabase implements DatabaseInterface
     
     protected $mysqli;
 
-    public function __construct(string $host, string $database, string $username, string $password)
-    {
+    public function __construct(
+        string $host,
+        string $database,
+        string $username,
+        string $password,
+        bool $usePersistentConnection = false
+    ) {
+        if ($usePersistentConnection) {
+            $host = 'p:'.$host;
+        }
+
         $this->mysqli = new MySqli($host, $username, $password, $database);
 
 
