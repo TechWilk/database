@@ -44,7 +44,10 @@ class MySqliDatabase implements DatabaseInterface
         $this->mysqli = new \MySqli($host, $username, $password, $database);
 
         if ($this->mysqli->connect_errno) {
-            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
+            throw new DatabaseException(
+                'Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error,
+                $this->mysqli->connect_errno
+            );
         }
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -64,6 +67,7 @@ class MySqliDatabase implements DatabaseInterface
      * Perform SQL query.
      *
      * @param string $sql with question mark syntax for parameters
+     * @param mixed[] $params
      *
      * @return MySqliDatabaseResult
      */
@@ -100,7 +104,7 @@ class MySqliDatabase implements DatabaseInterface
     /**
      * Create and execute an INSERT statement.
      *
-     * @param array ...$dataArrays (each an array of key => value pairs)
+     * @param array[] $dataArrays (each an array of key => value pairs)
      *
      * @return int insert id if only one insert, insert id of first if multiple inserts
      *
@@ -275,6 +279,8 @@ class MySqliDatabase implements DatabaseInterface
 
     /**
      * Parses data and converts to string for WHERE clause.
+     *
+     * @param array|string $data (use '1=1' to delete entire table contents)
      */
     protected function parseWhere($where): QuerySegment
     {
