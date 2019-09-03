@@ -228,6 +228,51 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
+     * Performs a SELECT first, If the record does not exist it will insert using the given data. If the record does
+     * exists then it will perform an UPDATE statement on the fields that have changed.
+     *
+     * @param string       $table
+     * @param array        $data  to update (key => value pairs)
+     * @param array|string $where (key => value pairs)
+     *
+     * @return int
+     */
+    public function selectAndUpdate(string $table, array $data, $where): int
+    {
+        $fields = array_keys($data);
+        $fields = array_map(self::class.'::secureTableField', $fields);
+
+        $whereSegment = $this->parseWhere($where);
+
+        $sql = 'SELECT '.implode(', ', $fields).' FROM '.$this->secureTableField($table).' '.$whereSegment->getSql();
+        $result = $this->query($sql, $whereSegment->getParameters());
+
+        if ($result->rowCount() > 1) {
+            throw new DatabaseException('Unable to update changes: multiple records found');
+        }
+
+        if (0 == $result->rowCount()) {
+            return $this->insert($table, $data);
+        }
+
+        // remove fields which haven't changed
+        $previous = $result->fetchArray();
+
+        foreach ($data as $field => $value) {
+            if ($previous[$field] == $value) {
+                unset($data[$field]);
+            }
+        }
+
+        // nothing to update
+        if (empty($data)) {
+            return 0;
+        }
+
+        return $this->update($table, $data, $where);
+    }
+
+    /**
      * Create and execute DELETE statement.
      *
      * @param array|string $where (use '1=1' to delete entire table contents)

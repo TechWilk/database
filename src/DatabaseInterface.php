@@ -46,6 +46,15 @@ interface DatabaseInterface
      */
     public function update(string $table, array $data, $where): int;
 
+    /**
+     * Create and execute an UPDATE statement using a where valid IN ().
+     *
+     * @param string $table
+     * @param array  $data
+     * @param array  $where
+     *
+     * @return int
+     */
     public function updateUsingIn(string $table, array $data, array $where): int;
 
     /**
@@ -57,6 +66,18 @@ interface DatabaseInterface
      * @return int $rowCount
      */
     public function updateChanges(string $table, array $data, $where): int;
+
+    /**
+     * Performs a SELECT first, If the record does not exist it will insert using the given data. If the record does
+     * exists then it will perform an UPDATE statement on the fields that have changed.
+     *
+     * @param string       $table
+     * @param array        $data  to update (key => value pairs)
+     * @param array|string $where (key => value pairs)
+     *
+     * @return int
+     */
+    public function selectAndUpdate(string $table, array $data, $where): int;
 
     /**
      * Create and execute DELETE statement.
