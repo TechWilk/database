@@ -75,6 +75,13 @@ class MySqliDatabase implements DatabaseInterface
     {
         $stmt = $this->mysqli->prepare($sql);
 
+        if (false === $stmt) {
+            throw new DatabaseException(
+                'Mysqli Error: (' . $this->mysqli->errno . '). '.$this->mysqli->error,
+                $this->mysqli->errno
+            );
+        }
+
         if (!empty($params)) {
             $typeString = '';
             $typeParamArray = [];
@@ -95,6 +102,13 @@ class MySqliDatabase implements DatabaseInterface
         }
 
         $stmt->execute();
+
+        if (!empty($this->mysqli->error)) {
+            throw new DatabaseException(
+                'Mysqli Error: (' . $this->mysqli->errno . '). '.$this->mysqli->error,
+                $this->mysqli->errno
+            );
+        }
 
         return new MySqliDatabaseResult(
             $stmt
