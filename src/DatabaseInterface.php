@@ -5,17 +5,14 @@ namespace TechWilk\Database;
 interface DatabaseInterface
 {
     /**
-     * Run a sql query on the database
-     *
-     * @param Query $query
-     * @return DatabaseResultInterface
+     * Run a sql query on the database.
      */
     public function runQuery(Query $query): DatabaseResultInterface;
 
     /**
-     * Perform SQL query
+     * Perform SQL query.
      *
-     * @param string $sql with question mark syntax for parameters
+     * @param string  $sql    with question mark syntax for parameters
      * @param mixed[] $params
      */
     public function query(string $sql, array $params = []): DatabaseResultInterface;
@@ -30,10 +27,9 @@ interface DatabaseInterface
     public function insert(string $table, array ...$dataArrays);
 
     /**
-     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause
+     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause.
      *
-     * @param string $table
-     * @param array $data to insert (key => value pairs)
+     * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
      *
      * @return void
@@ -41,30 +37,30 @@ interface DatabaseInterface
     public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []);
 
     /**
-     * Create and execute an UPDATE statement
+     * Create and execute an UPDATE statement.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function update(string $table, array $data, $where): int;
 
     /**
-     * Create and execute an UPDATE statement on only the fields which have changed
+     * Create and execute an UPDATE statement on only the fields which have changed.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function updateChanges(string $table, array $data, $where): int;
 
     /**
-     * Create and execute DELETE statement
+     * Create and execute DELETE statement.
      *
-     * @param string $table
      * @param array|string $where (use '1=1' to delete entire table contents)
+     *
      * @return int rows affected
      */
     public function delete(string $table, $where): int;

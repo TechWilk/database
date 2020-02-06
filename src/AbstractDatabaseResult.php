@@ -1,14 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database;
 
-use TechWilk\Database\DatabaseResultInterface;
-
 abstract class AbstractDatabaseResult implements DatabaseResultInterface
 {
     /**
-     * Fetches next row
+     * Fetches next row.
      *
      * @see self::fetchObject()
      */
@@ -18,7 +17,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Fetches all rows
+     * Fetches all rows.
      */
     public function fetchAll(string $className = 'stdClass', array $params = []): array
     {
@@ -26,12 +25,12 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Fetches all rows as an array
+     * Fetches all rows as an array.
      */
     public function fetchAllObject(string $className = 'stdClass', array $params = []): array
     {
         $data = [];
-        for ($i=0; $i < $this->rowCount(); $i++) {
+        for ($i = 0; $i < $this->rowCount(); ++$i) {
             $data[] = $this->fetchObject($className, $params);
         }
 
@@ -39,12 +38,12 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Fetches all rows as an array
+     * Fetches all rows as an array.
      */
     public function fetchAllArray(): array
     {
         $data = [];
-        for ($i=0; $i < $this->rowCount(); $i++) {
+        for ($i = 0; $i < $this->rowCount(); ++$i) {
             $data[] = $this->fetchArray();
         }
 
@@ -54,7 +53,8 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     // ---- aliases for people used to the "get" syntax ----
 
     /**
-     * Alias for fetch()
+     * Alias for fetch().
+     *
      * @see self::fetch()
      */
     public function get()
@@ -63,7 +63,8 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Alias for fetchAll()
+     * Alias for fetchAll().
+     *
      * @see self::fetchAll()
      */
     public function getAll(string $className = 'stdClass', array $params = []): array
@@ -72,7 +73,8 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Alias for fetchAllObject()
+     * Alias for fetchAllObject().
+     *
      * @see self::fetchAllObject()
      */
     public function getObject(string $className = 'stdClass', array $params = [])
@@ -81,7 +83,8 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Alias for fetchAllArray()
+     * Alias for fetchAllArray().
+     *
      * @see self::fetchAllArray()
      */
     public function getArray(): array
@@ -90,7 +93,8 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Alias for fetchColumn()
+     * Alias for fetchColumn().
+     *
      * @see self::fetchColumn()
      */
     public function getColumn(string $column)

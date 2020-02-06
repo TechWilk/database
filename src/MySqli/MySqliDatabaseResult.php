@@ -1,14 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database\MySqli;
 
-use TechWilk\Database\{
-    AbstractDatabaseResult,
-    DatabaseResultInterface
-};
+use TechWilk\Database\AbstractDatabaseResult;
+use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
-use mysqli_stmt;
 
 class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseResultInterface
 {
@@ -17,18 +15,16 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
 
     /**
      * MySqliDatabaseResult constructor.
-     * @param mysqli_stmt $stmt
      */
-    public function __construct(mysqli_stmt $stmt)
+    public function __construct(\mysqli_stmt $stmt)
     {
         $this->stmt = $stmt;
         $this->result = $stmt->get_result();
     }
 
     /**
-     * Fetches next row as an object
-     * @param string $className
-     * @param array $params
+     * Fetches next row as an object.
+     *
      * @throws DatabaseException
      */
     public function fetchObject(string $className = 'stdClass', array $params = [])
@@ -36,7 +32,6 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
         $this->checkResult('Cannot call fetchObject without a result');
 
         if ('stdClass' === $className) {
-
             return $this->result->fetch_object() ?? false;
         }
 
@@ -44,9 +39,9 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     }
 
     /**
-     * Fetches next row as an array
+     * Fetches next row as an array.
      */
-	public function fetchArray($type = MYSQLI_ASSOC)
+    public function fetchArray($type = MYSQLI_ASSOC)
     {
         $this->checkResult('Cannot call fetchArray without a result');
 
@@ -54,13 +49,11 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     }
 
     /**
-     * Fetch Column
+     * Fetch Column.
      *
      * Fetches data from a single column in the result set.
      * Will only return NOT NULL values
      *
-     * @param string $column
-     * @return
      * @throws DatabaseException
      */
     public function fetchColumn(string $column)
@@ -69,8 +62,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
 
         $row = $this->result->fetch_assoc();
 
-        if($row === null) {
-
+        if (null === $row) {
             return false;
         }
 
@@ -82,15 +74,23 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     }
 
     /**
-     * Checks if the result is empty
+     * Checks if the result is empty.
      */
     public function isEmpty(): bool
     {
-        return $this->rowCount() === 0;
+        return 0 === $this->rowCount();
     }
 
     /**
-     * Number of affected/fetched rows
+     * @deprecated use isEmpty() instead
+     */
+    public function is_empty(): bool
+    {
+        return $this->isEmpty();
+    }
+
+    /**
+     * Number of affected/fetched rows.
      *
      * @return int $rowCount
      */
@@ -100,11 +100,11 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     }
 
     /**
-     * Resets the pointer for data seeking
+     * Resets the pointer for data seeking.
      */
     public function reset()
     {
-        //TODO Need see if this is still wanted for mysli
+        // TODO Need see if this is still wanted for mysli
         throw new DatabaseException('Function not available');
     }
 
@@ -115,16 +115,14 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     }
 
     /**
-     * Checks if we have a result
-     * @param string $message
+     * Checks if we have a result.
+     *
      * @throws DatabaseException
      */
     private function checkResult(string $message)
     {
         if (!$this->result) {
-            throw new DatabaseException(
-                $message
-            );
+            throw new DatabaseException($message);
         }
     }
 

@@ -1,23 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database\Pdo;
 
-use TechWilk\Database\{
-    Query,
-    QuerySegment,
-    DatabaseInterface,
-    DatabaseResultInterface
-};
-use TechWilk\Database\Exception\{
-    DatabaseException,
-    BadFieldException
-};
-use PDO;
+use TechWilk\Database\DatabaseInterface;
+use TechWilk\Database\DatabaseResultInterface;
+use TechWilk\Database\Exception\BadFieldException;
+use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\Query;
+use TechWilk\Database\QuerySegment;
 
 class PdoDatabase implements DatabaseInterface
 {
-    const VALID_EQUATORS = [
+    public const VALID_EQUATORS = [
         'LIKE',
         'IS',
         'IS NOT',
@@ -42,20 +38,18 @@ class PdoDatabase implements DatabaseInterface
         string $username,
         string $password,
         bool $usePersistentConnection = false
-    )
-    {
+    ) {
         $dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';charset=utf8mb4';
 
-        $this->pdo = new PDO($dsn, $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_PERSISTENT => $usePersistentConnection,
+        $this->pdo = new \PDO($dsn, $username, $password, [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_PERSISTENT => $usePersistentConnection,
         ]);
     }
 
     /**
-     * Run a sql query on the database
+     * Run a sql query on the database.
      *
-     * @param Query $query
      * @return PdoDatabaseResult
      */
     public function runQuery(Query $query): DatabaseResultInterface
@@ -64,9 +58,9 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Perform SQL query
+     * Perform SQL query.
      *
-     * @param string $sql with question mark syntax for parameters
+     * @param string  $sql    with question mark syntax for parameters
      * @param mixed[] $params
      *
      * @return PdoDatabaseResult
@@ -80,19 +74,16 @@ class PdoDatabase implements DatabaseInterface
         $i = 1;
         foreach ($params as $param) {
             if (is_int($param)) {
-                $stmt->bindValue($i, $param, PDO::PARAM_INT);
-
+                $stmt->bindValue($i, $param, \PDO::PARAM_INT);
             } elseif (is_bool($param)) {
-                $stmt->bindValue($i, $param, PDO::PARAM_BOOL);
-
+                $stmt->bindValue($i, $param, \PDO::PARAM_BOOL);
             } elseif (is_null($param)) {
-                $stmt->bindValue($i, $param, PDO::PARAM_NULL);
-
+                $stmt->bindValue($i, $param, \PDO::PARAM_NULL);
             } else {
-                $stmt->bindValue($i, $param, PDO::PARAM_STR);
+                $stmt->bindValue($i, $param, \PDO::PARAM_STR);
             }
 
-            $i += 1;
+            ++$i;
         }
 
         $stmt->execute();
@@ -108,9 +99,8 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an INSERT statement
+     * Create and execute an INSERT statement.
      *
-     * @param string $table
      * @param array[] $dataArrays (each an array of key => value pairs)
      *
      * @return int insert id if only one insert, insert id of first if multiple inserts
@@ -124,10 +114,9 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause
+     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause.
      *
-     * @param string $table
-     * @param array $data to insert (key => value pairs)
+     * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
      *
      * @return void
@@ -146,11 +135,11 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an UPDATE statement
+     * Create and execute an UPDATE statement.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function update(string $table, array $data, $where): int
@@ -167,11 +156,11 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an UPDATE statement on only the fields which have changed
+     * Create and execute an UPDATE statement on only the fields which have changed.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function updateChanges(string $table, array $data, $where): int
@@ -207,10 +196,10 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute DELETE statement
+     * Create and execute DELETE statement.
      *
-     * @param string $table
      * @param array|string $where (use '1=1' to delete entire table contents)
+     *
      * @return int rows affected
      */
     public function delete(string $table, $where): int
@@ -259,14 +248,12 @@ class PdoDatabase implements DatabaseInterface
     /**
      * Parses data and converts to string for WHERE clause.
      *
-     * @param array|string $data (use '1=1' to delete entire table contents)
-     *
-     * @return QuerySegment
+     * @param array|string $where (use '1=1' to delete entire table contents)
      */
     protected function parseWhere($where): QuerySegment
     {
         $whereSegment = new QuerySegment('WHERE (');
-        $dataSegment = is_array($where) ? $this->parseDataArray($where, ' AND ') : new QuerySegment((string)$where);
+        $dataSegment = is_array($where) ? $this->parseDataArray($where, ' AND ') : new QuerySegment((string) $where);
         $closingSegment = new QuerySegment(')');
 
         return $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
@@ -276,12 +263,12 @@ class PdoDatabase implements DatabaseInterface
      * Parse data array.
      *
      * @param string $glue for the implode()
-     *   use ', ' for SET clauses
-     *   or ' AND ' for WHERE clauses
-     *
-     * @throws DatabaseException
+     *                     use ', ' for SET clauses
+     *                     or ' AND ' for WHERE clauses
      *
      * @return QuerySegment
+     *
+     * @throws DatabaseException
      */
     protected function parseDataArray(array $data, string $glue = ', ')
     {
@@ -295,8 +282,8 @@ class PdoDatabase implements DatabaseInterface
             $equator = $this->parseEquatorFromField($field);
 
             // remove equator from field string
-            if ($equator !== '=') {
-                $equatorWithSpace = ' '.$equator;
+            if ('=' !== $equator) {
+                $equatorWithSpace = ' ' . $equator;
                 $startPosition = strlen($field) - strlen($equatorWithSpace);
                 $field = substr($field, 0, $startPosition);
             }
@@ -311,7 +298,7 @@ class PdoDatabase implements DatabaseInterface
                     $sqlSegments[] = $this->secureTableField($field) . ' = ' . $this->secureTableField($field) . ' ' . $equator . ' ?';
                     $parameters[] = $value;
                     break;
-                default;
+                default:
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
                     $parameters[] = $value;
             }
@@ -326,14 +313,14 @@ class PdoDatabase implements DatabaseInterface
     private function parseEquatorFromField(string $field): string
     {
         foreach (self::VALID_EQUATORS as $equator) {
-            $equatorWithSpace = ' '.$equator;
+            $equatorWithSpace = ' ' . $equator;
             $startPosition = strlen($field) - strlen($equatorWithSpace);
 
             if ($startPosition < 0) {
                 continue;
             }
 
-            if (strpos($field, $equatorWithSpace, $startPosition) !== false) {
+            if (false !== strpos($field, $equatorWithSpace, $startPosition)) {
 
                 return $equator;
             }
@@ -343,10 +330,7 @@ class PdoDatabase implements DatabaseInterface
     }
 
     /**
-     * Returns table or field name surrounded by ` character
-     *
-     * @param string $field
-     * @return string
+     * Returns table or field name surrounded by ` character.
      */
     protected function secureTableField(string $field): string
     {
@@ -354,7 +338,7 @@ class PdoDatabase implements DatabaseInterface
             throw new BadFieldException('Field name contains no characters');
         }
 
-        if (strpos($field, '`') !== false) {
+        if (false !== strpos($field, '`')) {
             throw new BadFieldException('Field name must not include ` character');
         }
 
@@ -368,7 +352,7 @@ class PdoDatabase implements DatabaseInterface
 
     public function lastInsertId(): int
     {
-        return (int)$this->pdo->lastInsertId();
+        return (int) $this->pdo->lastInsertId();
     }
 
     public function __destruct()

@@ -1,22 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database\MySqli;
 
-use TechWilk\Database\{
-    Query,
-    QuerySegment,
-    DatabaseInterface,
-    DatabaseResultInterface};
-use TechWilk\Database\Exception\{
-    DatabaseException,
-    BadFieldException
-};
-use MySqli;
+use TechWilk\Database\DatabaseInterface;
+use TechWilk\Database\DatabaseResultInterface;
+use TechWilk\Database\Exception\BadFieldException;
+use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\Query;
+use TechWilk\Database\QuerySegment;
 
 class MySqliDatabase implements DatabaseInterface
 {
-    const VALID_EQUATORS = [
+    public const VALID_EQUATORS = [
         'LIKE',
         'IS',
         'IS NOT',
@@ -30,7 +27,7 @@ class MySqliDatabase implements DatabaseInterface
         '+',
         '-',
     ];
-    
+
     protected $mysqli;
 
     public function __construct(
@@ -41,26 +38,21 @@ class MySqliDatabase implements DatabaseInterface
         bool $usePersistentConnection = false
     ) {
         if ($usePersistentConnection) {
-            $host = 'p:'.$host;
+            $host = 'p:' . $host;
         }
 
-        $this->mysqli = new MySqli($host, $username, $password, $database);
-
+        $this->mysqli = new \MySqli($host, $username, $password, $database);
 
         if ($this->mysqli->connect_errno) {
-            throw new DatabaseException(
-                'Failed to connect to MySQL: ('.$this->mysqli->connect_errno.') '.$this->mysqli->connect_error,
-                $this->mysqli->connect_errno
-            );
+            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     }
 
     /**
-     * Run a sql query on the database
+     * Run a sql query on the database.
      *
-     * @param Query $query
      * @return MySqliDatabaseResult
      */
     public function runQuery(Query $query): DatabaseResultInterface
@@ -69,10 +61,10 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Perform SQL query
+     * Perform SQL query.
      *
      * @param string $sql with question mark syntax for parameters
-     * @param array $params
+     *
      * @return MySqliDatabaseResult
      */
     public function query(string $sql, array $params = []): DatabaseResultInterface
@@ -87,15 +79,12 @@ class MySqliDatabase implements DatabaseInterface
                 if (is_int($param) || is_bool($param)) {
                     $typeString .= 'i';
                     $typeParamArray[] = $param;
-
                 } elseif (is_double($param)) {
                     $typeString .= 'd';
                     $typeParamArray[] = $param;
-
                 } else {
                     $typeString .= 's';
                     $typeParamArray[] = $param;
-
                 }
             }
             $stmt->bind_param($typeString, ...$typeParamArray);
@@ -109,11 +98,12 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an INSERT statement
+     * Create and execute an INSERT statement.
      *
-     * @param string $table
      * @param array ...$dataArrays (each an array of key => value pairs)
+     *
      * @return int insert id if only one insert, insert id of first if multiple inserts
+     *
      * @throws DatabaseException
      */
     public function insert(string $table, array ...$dataArrays)
@@ -125,10 +115,9 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause
+     * Create and execute an INSERT statement with ON DUPLICATE KEY UPDATE clause.
      *
-     * @param string $table
-     * @param array $data to insert (key => value pairs)
+     * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
      *
      * @return void
@@ -147,17 +136,17 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an UPDATE statement
+     * Create and execute an UPDATE statement.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function update(string $table, array $data, $where): int
     {
         $query = Query::fromSegments([
-            new QuerySegment('UPDATE '.$this->secureTableField($table).' SET '),
+            new QuerySegment('UPDATE ' . $this->secureTableField($table) . ' SET '),
             $this->parseDataArray($data),
             $this->parseWhere($where),
         ]);
@@ -168,22 +157,22 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute an UPDATE statement on only the fields which have changed
+     * Create and execute an UPDATE statement on only the fields which have changed.
      *
-     * @param string $table
-     * @param array $data to update (key => value pairs)
+     * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
+     *
      * @return int $rowCount
      */
     public function updateChanges(string $table, array $data, $where): int
     {
         // find previous values
         $fields = array_keys($data);
-        $fields = array_map(self::class.'::secureTableField', $fields);
+        $fields = array_map(self::class . '::secureTableField', $fields);
 
         $whereSegment = $this->parseWhere($where);
 
-        $sql = 'SELECT '.implode(', ', $fields).' FROM '.$this->secureTableField($table).' '.$whereSegment->getSql();
+        $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $this->secureTableField($table) . ' ' . $whereSegment->getSql();
         $result = $this->query($sql, $whereSegment->getParameters());
 
         if ($result->rowCount() > 1) {
@@ -208,10 +197,10 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Create and execute DELETE statement
+     * Create and execute DELETE statement.
      *
-     * @param string $table
      * @param array|string $where (use '1=1' to delete entire table contents)
+     *
      * @return int rows affected
      */
     public function delete(string $table, $where): int
@@ -219,7 +208,7 @@ class MySqliDatabase implements DatabaseInterface
         $whereQuerySegment = $this->parseWhere($where);
 
         $query = Query::fromSegments([
-            new QuerySegment('DELETE FROM '.$this->secureTableField($table)),
+            new QuerySegment('DELETE FROM ' . $this->secureTableField($table)),
             $whereQuerySegment,
         ]);
 
@@ -235,11 +224,11 @@ class MySqliDatabase implements DatabaseInterface
         }
 
         $fields = array_keys($dataArrays[0]);
-        $fields = array_map(self::class.'::secureTableField', $fields);
+        $fields = array_map(self::class . '::secureTableField', $fields);
 
         $fieldsCount = count($fields);
         $questionMarks = array_fill(0, $fieldsCount, '?');
-        $valuesSet = '('.implode(', ', $questionMarks).')';
+        $valuesSet = '(' . implode(', ', $questionMarks) . ')';
 
         $values = [];
         $params = [];
@@ -250,23 +239,20 @@ class MySqliDatabase implements DatabaseInterface
             }
         }
 
-        $sql = 'INSERT INTO '.$this->secureTableField($table);
-        $sql .= ' ('.implode(', ', $fields).')';
-        $sql .= ' VALUES '.implode(', ', $values);
+        $sql = 'INSERT INTO ' . $this->secureTableField($table);
+        $sql .= ' (' . implode(', ', $fields) . ')';
+        $sql .= ' VALUES ' . implode(', ', $values);
 
         return new QuerySegment($sql, $params);
     }
 
     /**
-     * Parses data and converts to string for WHERE clause
-     *
-     * @param array|string $data (use '1=1' to delete entire table contents)
-     * @return QuerySegment
+     * Parses data and converts to string for WHERE clause.
      */
     protected function parseWhere($where): QuerySegment
     {
         $whereSegment = new QuerySegment('WHERE (');
-        $dataSegment = is_array($where) ? $this->parseDataArray($where, ' AND ') : new QuerySegment((string)$where);
+        $dataSegment = is_array($where) ? $this->parseDataArray($where, ' AND ') : new QuerySegment((string) $where);
         $closingSegment = new QuerySegment(')');
 
         return $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
@@ -276,12 +262,12 @@ class MySqliDatabase implements DatabaseInterface
      * Parse data array.
      *
      * @param string $glue for the implode()
-     *   use ', ' for SET clauses
-     *   or ' AND ' for WHERE clauses
-     *
-     * @throws DatabaseException
+     *                     use ', ' for SET clauses
+     *                     or ' AND ' for WHERE clauses
      *
      * @return QuerySegment
+     *
+     * @throws DatabaseException
      */
     protected function parseDataArray(array $data, string $glue = ', ')
     {
@@ -295,8 +281,8 @@ class MySqliDatabase implements DatabaseInterface
             $equator = $this->parseEquatorFromField($field);
 
             // remove equator from field string
-            if ($equator !== '=') {
-                $equatorWithSpace = ' '.$equator;
+            if ('=' !== $equator) {
+                $equatorWithSpace = ' ' . $equator;
                 $startPosition = strlen($field) - strlen($equatorWithSpace);
                 $field = substr($field, 0, $startPosition);
             }
@@ -311,9 +297,9 @@ class MySqliDatabase implements DatabaseInterface
                     $sqlSegments[] = $this->secureTableField($field) . ' = ' . $this->secureTableField($field) . ' ' . $equator . ' ?';
                     $parameters[] = $value;
                     break;
-                default;
-                    $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
-                    $parameters[] = $value;
+                default:
+                $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
+                $parameters[] = $value;
             }
 
         }
@@ -326,14 +312,14 @@ class MySqliDatabase implements DatabaseInterface
     private function parseEquatorFromField(string $field): string
     {
         foreach (self::VALID_EQUATORS as $equator) {
-            $equatorWithSpace = ' '.$equator;
+            $equatorWithSpace = ' ' . $equator;
             $startPosition = strlen($field) - strlen($equatorWithSpace);
 
             if ($startPosition < 0) {
                 continue;
             }
 
-            if (strpos($field, $equatorWithSpace, $startPosition) !== false) {
+            if (false !== strpos($field, $equatorWithSpace, $startPosition)) {
 
                 return $equator;
             }
@@ -343,10 +329,7 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
-     * Returns table or field name surrounded by ` character
-     *
-     * @param string $field
-     * @return string
+     * Returns table or field name surrounded by ` character.
      */
     protected function secureTableField(string $field): string
     {
@@ -354,16 +337,16 @@ class MySqliDatabase implements DatabaseInterface
             throw new BadFieldException('Field name contains no characters');
         }
 
-        if (strpos($field, '`') !== false) {
+        if (false !== strpos($field, '`')) {
             throw new BadFieldException('Field name must not include ` character');
         }
 
-        return '`'.$field.'`';
+        return '`' . $field . '`';
     }
 
     public function lastInsertId(): int
     {
-        return (int)$this->mysqli->insert_id;
+        return (int) $this->mysqli->insert_id;
     }
 
     public function __destruct()

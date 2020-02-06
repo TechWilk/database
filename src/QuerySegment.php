@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database;
-
-use BadMethodCallException;
 
 final class QuerySegment
 {
@@ -55,7 +54,7 @@ final class QuerySegment
     {
         $sql = empty($tablePrefix) ? '' : '`' . $tablePrefix . '`.';
         $sql .= '`' . $field . '` IN (';
-        $sql .= implode(",", array_fill(0, count($values), '?'));
+        $sql .= implode(',', array_fill(0, count($values), '?'));
         $sql .= ')';
 
         $values = array_values($values);
@@ -65,11 +64,11 @@ final class QuerySegment
 
     public function __set(string $property, mixed $value)
     {
-        throw new BadMethodCallException('Object is immutable.');
+        throw new \BadMethodCallException('Object is immutable.');
     }
 
     public function __unset(string $property)
     {
-        throw new BadMethodCallException('Object is immutable.');
+        throw new \BadMethodCallException('Object is immutable.');
     }
 }

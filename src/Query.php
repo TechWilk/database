@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace TechWilk\Database;
-
-use BadMethodCallException;
 
 final class Query
 {
@@ -56,11 +55,11 @@ final class Query
 
     public function __set(string $property, mixed $value)
     {
-        throw new BadMethodCallException('Object is immutable.');
+        throw new \BadMethodCallException('Object is immutable.');
     }
 
     public function __unset(string $property)
     {
-        throw new BadMethodCallException('Object is immutable.');
+        throw new \BadMethodCallException('Object is immutable.');
     }
 }
