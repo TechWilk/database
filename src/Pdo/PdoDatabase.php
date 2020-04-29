@@ -17,6 +17,7 @@ class PdoDatabase implements DatabaseInterface
         'LIKE',
         'IS',
         'IS NOT',
+        'IN',
         '>',
         '>=',
         '<',
@@ -365,6 +366,14 @@ class PdoDatabase implements DatabaseInterface
                 case 'IS':
                 case 'IS NOT':
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' NULL';
+                    break;
+                case 'IN':
+                    if (!is_array($value)) {
+                        throw new DatabaseException('Invalid value for SQL IN statement');
+                    }
+                    $placeholders = implode(',', array_fill(0, count($value), '?'));
+                    $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' (' . $placeholders . ')';
+                    $parameters = array_merge($parameters, $value);
                     break;
                 case '+':
                 case '-':

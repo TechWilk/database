@@ -17,6 +17,7 @@ class MySqliDatabase implements DatabaseInterface
         'LIKE',
         'IS',
         'IS NOT',
+        'IN',
         '>',
         '>=',
         '<',
@@ -381,8 +382,17 @@ class MySqliDatabase implements DatabaseInterface
 
             switch ($equator) {
                 case 'IS':
+                $placeholder = ' (' . implode('?,', array_fill(0, count($value), '?')) . ')';
                 case 'IS NOT':
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' NULL';
+                    break;
+                case 'IN':
+                    if (!is_array($value)) {
+                        throw new DatabaseException('Invalid value for SQL IN statement');
+                    }
+                    $placeholders = implode(',', array_fill(0, count($value), '?'));
+                    $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' (' . $placeholders . ')';
+                    $parameters = array_merge($parameters, $value);
                     break;
                 case '+':
                 case '-':
