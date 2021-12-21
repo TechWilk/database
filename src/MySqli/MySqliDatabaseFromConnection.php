@@ -16,10 +16,7 @@ class MySqliDatabaseFromConnection extends MySqliDatabase
         $this->mysqli = $connection;
 
         if ($this->mysqli->connect_errno) {
-            throw new DatabaseException(
-                'Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error,
-                $this->mysqli->connect_errno
-            );
+            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);

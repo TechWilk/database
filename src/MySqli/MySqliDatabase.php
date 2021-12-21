@@ -15,6 +15,9 @@ class MySqliDatabase implements DatabaseInterface
 {
     use ParseDataArray;
 
+    /**
+     * @var \Mysqli
+     */
     protected $mysqli;
 
     public function __construct(
@@ -56,10 +59,7 @@ class MySqliDatabase implements DatabaseInterface
         $stmt = $this->mysqli->prepare($sql);
 
         if (false === $stmt) {
-            throw new DatabaseException(
-                'Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error,
-                $this->mysqli->errno
-            );
+            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
         }
 
         if (!empty($params)) {
@@ -84,10 +84,7 @@ class MySqliDatabase implements DatabaseInterface
         $stmt->execute();
 
         if (!empty($this->mysqli->error)) {
-            throw new DatabaseException(
-                'Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error,
-                $this->mysqli->errno
-            );
+            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
         }
 
         return new MySqliDatabaseResult(
@@ -311,7 +308,7 @@ class MySqliDatabase implements DatabaseInterface
     /**
      * Parses data and converts to string for WHERE clause.
      *
-     * @param array|string $data (use '1=1' to delete entire table contents)
+     * @param array|string $where (use '1=1' to delete entire table contents)
      */
     protected function parseWhere($where): QuerySegment
     {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TechWilk\Database;
 
+use TechWilk\Database\Exception\DatabaseException;
+
 interface DatabaseResultInterface
 {
     /**
@@ -16,35 +18,35 @@ interface DatabaseResultInterface
     /**
      * Fetches next row as an object.
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchObject(string $className = 'stdClass', array $params = []);
 
     /**
      * Fetches next row.
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchArray();
 
     /**
      * Fetches all rows.
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchAll(string $className = 'stdClass', array $params = []): array;
 
     /**
      * Fetches all rows as an array.
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchAllObject(string $className = 'stdClass', array $params = []): array;
 
     /**
      * Fetches all rows.
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchAllArray(): array;
 
@@ -54,7 +56,7 @@ interface DatabaseResultInterface
      * Fetches data from a single column in the result set.
      * Will only return NOT NULL values
      *
-     * @throws NoRowException
+     * @throws DatabaseException
      */
     public function fetchColumn(string $column);
 

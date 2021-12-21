@@ -25,7 +25,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     /**
      * Fetches next row as an object.
      *
-     * @param array  $params to pass to mysqli_result::fetch_object()
+     * @param array $params to pass to mysqli_result::fetch_object()
      *
      * @throws DatabaseException
      */
@@ -55,6 +55,8 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
      *
      * Fetches data from a single column in the result set.
      * Will only return NOT NULL values
+     *
+     * @return string
      *
      * @throws DatabaseException
      */
