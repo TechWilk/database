@@ -67,7 +67,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
         $row = $this->result->fetch_assoc();
 
         if (null === $row) {
-            return false;
+            throw new DatabaseException('No row found');
         }
 
         if (!isset($row[$column])) {
