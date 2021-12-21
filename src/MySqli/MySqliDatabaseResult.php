@@ -25,7 +25,6 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     /**
      * Fetches next row as an object.
      *
-     * @param string $className
      * @param array  $params to pass to mysqli_result::fetch_object()
      *
      * @throws DatabaseException

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TechWilk\Database;
 
 interface DatabaseInterface
@@ -31,8 +33,6 @@ interface DatabaseInterface
      *
      * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
-     *
-     * @return void
      */
     public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []);
 
@@ -48,12 +48,6 @@ interface DatabaseInterface
 
     /**
      * Create and execute an UPDATE statement using a where valid IN ().
-     *
-     * @param string $table
-     * @param array  $data
-     * @param array  $where
-     *
-     * @return int
      */
     public function updateUsingIn(string $table, array $data, array $where): int;
 
@@ -71,11 +65,8 @@ interface DatabaseInterface
      * Performs a SELECT first, If the record does not exist it will insert using the given data. If the record does
      * exists then it will perform an UPDATE statement on the fields that have changed.
      *
-     * @param string       $table
      * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
-     *
-     * @return int
      */
     public function selectAndUpdate(string $table, array $data, $where): int;
 
