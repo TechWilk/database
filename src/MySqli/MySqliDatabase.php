@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace TechWilk\Database\MySqli;
 
 use TechWilk\Database\DatabaseInterface;
-use TechWilk\Database\Exception\BadFieldException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
 use TechWilk\Database\QuerySegment;
@@ -14,6 +14,7 @@ use TechWilk\Database\QuerySegment;
 class MySqliDatabase implements DatabaseInterface
 {
     use ParseDataArray;
+    use MySqlSecureTableField;
 
     /**
      * @var \Mysqli
@@ -317,22 +318,6 @@ class MySqliDatabase implements DatabaseInterface
         $closingSegment = new QuerySegment(')');
 
         return $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
-    }
-
-    /**
-     * Returns table or field name surrounded by ` character.
-     */
-    protected function secureTableField(string $field): string
-    {
-        if (empty($field)) {
-            throw new BadFieldException('Field name contains no characters');
-        }
-
-        if (false !== strpos($field, '`')) {
-            throw new BadFieldException('Field name must not include ` character');
-        }
-
-        return '`' . $field . '`';
     }
 
     public function lastInsertId(): int
