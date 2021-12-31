@@ -223,6 +223,31 @@ class FakeDatabase implements DatabaseInterface
         return $result->rowCount();
     }
 
+    /**
+     * Create and execute DELETE statement using a where valid IN ().
+     *
+     * @param array|string $where (use '1=1' to delete entire table contents)
+     *
+     * @return int rows affected
+     */
+    public function deleteUsingIn(string $table, $where): int
+    {
+        $whereSegment = new QuerySegment('WHERE (');
+        $dataSegment = QuerySegment::fieldIn(key($where), reset($where));
+        $closingSegment = new QuerySegment(')');
+
+        $finalWhereSegment = $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
+
+        $query = Query::fromSegments([
+            new QuerySegment('DELETE FROM ' . $this->secureTableField($table)),
+            $finalWhereSegment,
+        ]);
+
+        $result = $this->runQuery($query);
+
+        return $result->rowCount();
+    }
+
     protected function createInsertSql(string $table, array ...$dataArrays)
     {
         if (empty($dataArrays[0])) {

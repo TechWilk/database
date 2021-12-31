@@ -79,5 +79,14 @@ interface DatabaseInterface
      */
     public function delete(string $table, $where): int;
 
+    /**
+     * Create and execute DELETE statement using a where valid IN ().
+     *
+     * @param array|string $where (use '1=1' to delete entire table contents)
+     *
+     * @return int rows affected
+     */
+    public function deleteUsingIn(string $table, $where): int;
+
     public function lastInsertId(): int;
 }
