@@ -6,13 +6,10 @@ namespace TechWilk\Database;
 
 final class QuerySegment
 {
-    private $sql;
-    private $parameters;
-
-    public function __construct(string $sql, array $parameters = [])
-    {
-        $this->sql = $sql;
-        $this->parameters = $parameters;
+    public function __construct(
+        private string $sql,
+        private array $parameters = []
+    ) {
     }
 
     public function getSql(): string
@@ -78,9 +75,7 @@ final class QuerySegment
         $lastSegment = array_pop($segments);
 
         $segmentsWithSeparators = array_map(
-            function (QuerySegment $segment) use ($separator) {
-                return $segment->withSegment(new QuerySegment($separator));
-            },
+            fn (QuerySegment $segment) => $segment->withSegment(new QuerySegment($separator)),
             $segments
         );
 

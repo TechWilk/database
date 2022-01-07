@@ -44,7 +44,7 @@ interface DatabaseInterface
      *
      * @return int $rowCount
      */
-    public function update(string $table, array $data, $where): int;
+    public function update(string $table, array $data, array|string $where): int;
 
     /**
      * Create and execute an UPDATE statement using a where valid IN ().
@@ -59,7 +59,7 @@ interface DatabaseInterface
      *
      * @return int $rowCount
      */
-    public function updateChanges(string $table, array $data, $where): int;
+    public function updateChanges(string $table, array $data, array|string $where): int;
 
     /**
      * Performs a SELECT first, If the record does not exist it will insert using the given data. If the record does
@@ -68,7 +68,7 @@ interface DatabaseInterface
      * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
      */
-    public function selectAndUpdate(string $table, array $data, $where): int;
+    public function selectAndUpdate(string $table, array $data, array|string $where): int;
 
     /**
      * Create and execute DELETE statement.
@@ -77,7 +77,7 @@ interface DatabaseInterface
      *
      * @return int rows affected
      */
-    public function delete(string $table, $where): int;
+    public function delete(string $table, array|string $where): int;
 
     /**
      * Create and execute DELETE statement using a where valid IN ().
@@ -86,7 +86,7 @@ interface DatabaseInterface
      *
      * @return int rows affected
      */
-    public function deleteUsingIn(string $table, $where): int;
+    public function deleteUsingIn(string $table, array|string $where): int;
 
     public function lastInsertId(): int;
 }

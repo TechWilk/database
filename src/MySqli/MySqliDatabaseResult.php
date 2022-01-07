@@ -10,15 +10,14 @@ use TechWilk\Database\Exception\DatabaseException;
 
 class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseResultInterface
 {
-    protected $stmt;
     protected $result;
 
     /**
      * MySqliDatabaseResult constructor.
      */
-    public function __construct(\mysqli_stmt $stmt)
-    {
-        $this->stmt = $stmt;
+    public function __construct(
+        protected \mysqli_stmt $stmt
+    ) {
         $this->result = $stmt->get_result();
     }
 
@@ -29,11 +28,11 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
      *
      * @throws DatabaseException
      */
-    public function fetchObject(string $className = 'stdClass', array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = [])
     {
         $this->checkResult('Cannot call fetchObject without a result');
 
-        if ('stdClass' === $className) {
+        if (\stdClass::class === $className) {
             return $this->result->fetch_object() ?? false;
         }
 

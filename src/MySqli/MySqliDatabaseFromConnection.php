@@ -8,13 +8,9 @@ use TechWilk\Database\Exception\DatabaseException;
 
 class MySqliDatabaseFromConnection extends MySqliDatabase
 {
-    protected $mysqli;
-
     public function __construct(
-        \mysqli $connection
+        protected \mysqli $mysqli
     ) {
-        $this->mysqli = $connection;
-
         if ($this->mysqli->connect_errno) {
             throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }

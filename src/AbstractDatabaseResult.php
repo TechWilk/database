@@ -11,7 +11,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetchObject()
      */
-    public function fetch(string $className = 'stdClass', array $params = [])
+    public function fetch(string $className = \stdClass::class, array $params = [])
     {
         return $this->fetchObject($className, $params);
     }
@@ -19,7 +19,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     /**
      * Fetches all rows.
      */
-    public function fetchAll(string $className = 'stdClass', array $params = []): array
+    public function fetchAll(string $className = \stdClass::class, array $params = []): array
     {
         return $this->fetchAllObject($className, $params);
     }
@@ -27,7 +27,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     /**
      * Fetches all rows as an array.
      */
-    public function fetchAllObject(string $className = 'stdClass', array $params = []): array
+    public function fetchAllObject(string $className = \stdClass::class, array $params = []): array
     {
         $data = [];
         for ($i = 0; $i < $this->rowCount(); ++$i) {
@@ -67,7 +67,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetchAll()
      */
-    public function getAll(string $className = 'stdClass', array $params = []): array
+    public function getAll(string $className = \stdClass::class, array $params = []): array
     {
         return $this->fetchAll($className, $params);
     }
@@ -77,7 +77,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetchAllObject()
      */
-    public function getObject(string $className = 'stdClass', array $params = [])
+    public function getObject(string $className = \stdClass::class, array $params = [])
     {
         return $this->fetchAllObject($className, $params);
     }

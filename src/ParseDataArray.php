@@ -71,8 +71,8 @@ trait ParseDataArray
                     $parameters[] = $value;
                     break;
                 default:
-                $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
-                $parameters[] = $value;
+                    $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
+                    $parameters[] = $value;
             }
 
         }
@@ -85,14 +85,7 @@ trait ParseDataArray
     private function parseEquatorFromField(string $field): string
     {
         foreach ($this->validEquators as $equator) {
-            $equatorWithSpace = ' ' . $equator;
-            $startPosition = strlen($field) - strlen($equatorWithSpace);
-
-            if ($startPosition < 0) {
-                continue;
-            }
-
-            if (false !== strpos($field, $equatorWithSpace, $startPosition)) {
+            if (str_ends_with($field, ' ' . $equator)) {
 
                 return $equator;
             }

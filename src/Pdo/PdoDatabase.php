@@ -6,10 +6,10 @@ namespace TechWilk\Database\Pdo;
 
 use TechWilk\Database\DatabaseInterface;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
 use TechWilk\Database\QuerySegment;
-use TechWilk\Database\MySqlSecureTableField;
 
 class PdoDatabase implements DatabaseInterface
 {
@@ -17,8 +17,8 @@ class PdoDatabase implements DatabaseInterface
     use ParseDataArray;
 
     protected $pdo;
-    private $logQueries = false;
-    private $queries = [];
+    private bool $logQueries = false;
+    private array $queries = [];
 
     public function __construct(
         string $host,

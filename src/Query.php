@@ -6,13 +6,10 @@ namespace TechWilk\Database;
 
 final class Query
 {
-    private $sql;
-    private $parameters;
-
-    public function __construct(string $sql, array $parameters = [])
-    {
-        $this->sql = $sql;
-        $this->parameters = $parameters;
+    public function __construct(
+        private string $sql,
+        private array $parameters = []
+    ) {
     }
 
     public static function fromSegments(array $querySegments): self

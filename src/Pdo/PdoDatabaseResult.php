@@ -10,19 +10,17 @@ use TechWilk\Database\Exception\DatabaseException;
 
 class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResultInterface
 {
-    protected $stmt;
-
-    public function __construct(\PDOStatement $stmt)
-    {
-        $this->stmt = $stmt;
+    public function __construct(
+        protected \PDOStatement $stmt
+    ) {
     }
 
     /**
      * Fetches next row as an object.
      */
-    public function fetchObject(string $className = 'stdClass', array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = [])
     {
-        if ('stdClass' === $className) {
+        if (\stdClass::class === $className) {
             return $this->stmt->fetch(\PDO::FETCH_OBJ);
         }
 
@@ -34,9 +32,9 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray()
+    public function fetchArray($type = \PDO::FETCH_ASSOC)
     {
-        $array = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+        $array = $this->stmt->fetch($type);
 
         if (false === $array) {
             return null;

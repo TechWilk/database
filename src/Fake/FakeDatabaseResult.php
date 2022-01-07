@@ -10,17 +10,15 @@ use TechWilk\Database\Exception\DatabaseException;
 
 class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResultInterface
 {
-    private $returnData;
-
-    public function __construct(array $returnData = null)
-    {
-        $this->returnData = $returnData;
+    public function __construct(
+        private ?array $returnData = null
+    ) {
     }
 
     /**
      * Fetches next row as an object.
      */
-    public function fetchObject(string $className = 'stdClass', array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = [])
     {
         return (object) $this->returnData;
     }
@@ -28,7 +26,7 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray()
+    public function fetchArray($type)
     {
         return $this->returnData;
     }
@@ -63,7 +61,7 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
      */
     public function rowCount(): int
     {
-        return count($this->returnData);
+        return count((array) $this->returnData);
     }
 
     /**

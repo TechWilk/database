@@ -19,9 +19,9 @@ class FakeDatabase implements DatabaseInterface
 
     private $returnData;
 
-    public function __construct(array $returnData = [])
-    {
-        $this->returnData = $returnData;
+    public function __construct(
+        private array $returnData = []
+    ) {
     }
 
     /**
