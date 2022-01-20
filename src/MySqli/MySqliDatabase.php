@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace TechWilk\Database\MySqli;
 
 use TechWilk\Database\DatabaseInterface;
+use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -62,7 +64,7 @@ class MySqliDatabase implements DatabaseInterface
         $stmt = $this->mysqli->prepare($sql);
 
         if (false === $stmt) {
-            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
+            $this->handleMysqliError();
         }
 
         if (!empty($params)) {
@@ -87,7 +89,7 @@ class MySqliDatabase implements DatabaseInterface
         $stmt->execute();
 
         if (!empty($this->mysqli->error)) {
-            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
+            $this->handleMysqliError();
         }
 
         return new MySqliDatabaseResult(
@@ -350,6 +352,19 @@ class MySqliDatabase implements DatabaseInterface
     public function lastInsertId(): int
     {
         return (int) $this->mysqli->insert_id;
+    }
+
+    private function handleMysqliError(): void
+    {
+        $errorMessage = 'Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error;
+        switch ($this->mysqli->errno) {
+            case 1062:
+                throw new DuplicateDatabaseRecordException($errorMessage, $this->mysqli->errno);
+            case 1213:
+                throw new DatabaseDeadlockException($errorMessage, $this->mysqli->errno);
+            default:
+                throw new DatabaseException($errorMessage, $this->mysqli->errno);
+        }
     }
 
     public function __destruct()
