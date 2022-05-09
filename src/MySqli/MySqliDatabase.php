@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TechWilk\Database\MySqli;
 
 use TechWilk\Database\DatabaseInterface;
-use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\BadFieldException;
 use TechWilk\Database\Exception\DatabaseException;
 use TechWilk\Database\ParseDataArray;
@@ -29,13 +28,10 @@ class MySqliDatabase implements DatabaseInterface
             $host = 'p:' . $host;
         }
 
-        $this->mysqli = new \MySqli($host, $username, $password, $database);
+        $this->mysqli = new \mysqli($host, $username, $password, $database);
 
         if ($this->mysqli->connect_errno) {
-            throw new DatabaseException(
-                'Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error,
-                $this->mysqli->connect_errno
-            );
+            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -43,10 +39,8 @@ class MySqliDatabase implements DatabaseInterface
 
     /**
      * Run a sql query on the database.
-     *
-     * @return MySqliDatabaseResult
      */
-    public function runQuery(Query $query): DatabaseResultInterface
+    public function runQuery(Query $query): MySqliDatabaseResult
     {
         return $this->query($query->getSql(), $query->getParameters());
     }
@@ -54,20 +48,15 @@ class MySqliDatabase implements DatabaseInterface
     /**
      * Perform SQL query.
      *
-     * @param string $sql with question mark syntax for parameters
+     * @param string  $sql    with question mark syntax for parameters
      * @param mixed[] $params
-     *
-     * @return MySqliDatabaseResult
      */
-    public function query(string $sql, array $params = []): DatabaseResultInterface
+    public function query(string $sql, array $params = []): MySqliDatabaseResult
     {
         $stmt = $this->mysqli->prepare($sql);
 
         if (false === $stmt) {
-            throw new DatabaseException(
-                'Mysqli Error: (' . $this->mysqli->errno . '). '.$this->mysqli->error,
-                $this->mysqli->errno
-            );
+            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
         }
 
         if (!empty($params)) {
@@ -92,10 +81,7 @@ class MySqliDatabase implements DatabaseInterface
         $stmt->execute();
 
         if (!empty($this->mysqli->error)) {
-            throw new DatabaseException(
-                'Mysqli Error: (' . $this->mysqli->errno . '). '.$this->mysqli->error,
-                $this->mysqli->errno
-            );
+            throw new DatabaseException('Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error, $this->mysqli->errno);
         }
 
         return new MySqliDatabaseResult(
@@ -164,11 +150,6 @@ class MySqliDatabase implements DatabaseInterface
 
     /**
      * Create and execute an UPDATE statement using a where valid IN ().
-     *
-     * @param array $data
-     * @param array $where
-     *
-     * @return int
      */
     public function updateUsingIn(string $table, array $data, array $where): int
     {
@@ -179,7 +160,7 @@ class MySqliDatabase implements DatabaseInterface
         $finalWhereSegment = $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
 
         $query = Query::fromSegments([
-            new QuerySegment('UPDATE '.$this->secureTableField($table).' SET '),
+            new QuerySegment('UPDATE ' . $this->secureTableField($table) . ' SET '),
             $this->parseDataArray($data),
             $finalWhereSegment,
         ]);
@@ -233,20 +214,17 @@ class MySqliDatabase implements DatabaseInterface
      * Performs a SELECT first, If the record does not exist it will insert using the given data. If the record does
      * exists then it will perform an UPDATE statement on the fields that have changed.
      *
-     * @param string       $table
      * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
-     *
-     * @return int
      */
     public function selectAndUpdate(string $table, array $data, $where): int
     {
         $fields = array_keys($data);
-        $fields = array_map(self::class.'::secureTableField', $fields);
+        $fields = array_map(self::class . '::secureTableField', $fields);
 
         $whereSegment = $this->parseWhere($where);
 
-        $sql = 'SELECT '.implode(', ', $fields).' FROM '.$this->secureTableField($table).' '.$whereSegment->getSql();
+        $sql = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $this->secureTableField($table) . ' ' . $whereSegment->getSql();
         $result = $this->query($sql, $whereSegment->getParameters());
 
         if ($result->rowCount() > 1) {
