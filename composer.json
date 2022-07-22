@@ -1,5 +1,22 @@
 {
+    "name": "techwilk/database",
+    "description": "Simple PDO/MySQLi/SQLite wrapper to make perfoming SQL queries easier",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Techwilk\\Database\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christopher Wilkinson",
+            "email": "c@wilk.tech"
+        }
+    ],
+    "require": {},
     "require-dev": {
+        "ext-mysqli":  "*",
         "friendsofphp/php-cs-fixer": "^3.16"
     }
 }
