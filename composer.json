@@ -5,7 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Techwilk\\Database\\": "src/"
+            "TechWilk\\Database\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TechWilk\\Database\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -17,6 +22,10 @@
     "require": {},
     "require-dev": {
         "ext-mysqli":  "*",
-        "friendsofphp/php-cs-fixer": "^3.16"
+        "friendsofphp/php-cs-fixer": "^3.16",
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

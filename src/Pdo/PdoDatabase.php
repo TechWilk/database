@@ -28,11 +28,11 @@ class PdoDatabase implements DatabaseInterface
         bool $usePersistentConnection = false,
         int $port = null
     ) {
-        $dsn = 'mysql:'.implode(';', [
+        $dsn = 'mysql:' . implode(';', [
             'host=' . $host,
             'dbname=' . $database,
-            $port ? 'port='.$port : null,
-            'charset=utf8mb4'
+            $port ? 'port=' . $port : null,
+            'charset=utf8mb4',
         ]);
 
         $this->pdo = new \PDO($dsn, $username, $password, [
