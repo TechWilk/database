@@ -29,13 +29,14 @@ class MySqliDatabase implements DatabaseInterface
         string $username,
         string $password,
         int $errorReportingLevel = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
-        bool $usePersistentConnection = false
+        bool $usePersistentConnection = false,
+        int $port = null
     ) {
         if ($usePersistentConnection) {
             $host = 'p:' . $host;
         }
 
-        $this->mysqli = new \mysqli($host, $username, $password, $database);
+        $this->mysqli = new \mysqli($host, $username, $password, $database, $port);
 
         if ($this->mysqli->connect_errno) {
             throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);

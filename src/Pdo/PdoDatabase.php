@@ -25,9 +25,15 @@ class PdoDatabase implements DatabaseInterface
         string $database,
         string $username,
         string $password,
-        bool $usePersistentConnection = false
+        bool $usePersistentConnection = false,
+        int $port = null
     ) {
-        $dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';charset=utf8mb4';
+        $dsn = 'mysql:'.implode(';', [
+            'host=' . $host,
+            'dbname=' . $database,
+            $port ? 'port='.$port : null,
+            'charset=utf8mb4'
+        ]);
 
         $this->pdo = new \PDO($dsn, $username, $password, [
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
