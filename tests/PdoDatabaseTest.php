@@ -10,6 +10,7 @@ use TechWilk\Database\Pdo\PdoDatabase;
 class PdoDatabaseTest extends TestCase
 {
     use ValidQueryTestsTrait;
+    use InvalidQueryTestsTrait;
 
     protected $database;
 

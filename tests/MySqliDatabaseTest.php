@@ -10,6 +10,7 @@ use TechWilk\Database\MySqli\MySqliDatabase;
 class MySqliDatabaseTest extends TestCase
 {
     use ValidQueryTestsTrait;
+    use InvalidQueryTestsTrait;
 
     protected $database;
 
