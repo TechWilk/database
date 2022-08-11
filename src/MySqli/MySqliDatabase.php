@@ -61,41 +61,45 @@ class MySqliDatabase implements DatabaseInterface
      */
     public function query(string $sql, array $params = []): MySqliDatabaseResult
     {
-        /** @var \mysqli_stmt|false $stmt */
-        $stmt = $this->mysqli->prepare($sql);
+        try {
+            /** @var \mysqli_stmt|false $stmt */
+            $stmt = $this->mysqli->prepare($sql);
 
-        if (false === $stmt) {
-            $this->handleMysqliError();
-        }
-
-        if (!empty($params)) {
-            $typeString = '';
-            $typeParamArray = [];
-
-            foreach ($params as $param) {
-                if (is_int($param) || is_bool($param)) {
-                    $typeString .= 'i';
-                    $typeParamArray[] = $param;
-                } elseif (is_double($param)) {
-                    $typeString .= 'd';
-                    $typeParamArray[] = $param;
-                } else {
-                    $typeString .= 's';
-                    $typeParamArray[] = $param;
-                }
+            if (false === $stmt) {
+                $this->handleMysqliError();
             }
-            $stmt->bind_param($typeString, ...$typeParamArray);
+
+            if (!empty($params)) {
+                $typeString = '';
+                $typeParamArray = [];
+
+                foreach ($params as $param) {
+                    if (is_int($param) || is_bool($param)) {
+                        $typeString .= 'i';
+                        $typeParamArray[] = $param;
+                    } elseif (is_double($param)) {
+                        $typeString .= 'd';
+                        $typeParamArray[] = $param;
+                    } else {
+                        $typeString .= 's';
+                        $typeParamArray[] = $param;
+                    }
+                }
+                $stmt->bind_param($typeString, ...$typeParamArray);
+            }
+
+            $stmt->execute();
+
+            if (!empty($this->mysqli->error)) {
+                $this->handleMysqliError();
+            }
+
+            return new MySqliDatabaseResult(
+                $stmt
+            );
+        } catch (\Exception $e) {
+            throw new DatabaseException($e->getMessage(), $e->getCode(), $e);
         }
-
-        $stmt->execute();
-
-        if (!empty($this->mysqli->error)) {
-            $this->handleMysqliError();
-        }
-
-        return new MySqliDatabaseResult(
-            $stmt
-        );
     }
 
     /**

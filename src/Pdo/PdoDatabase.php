@@ -57,9 +57,10 @@ class PdoDatabase implements DatabaseInterface
      */
     public function query(string $sql, array $params = []): PdoDatabaseResult
     {
-        $startTime = microtime(true);
+        try {
+            $startTime = microtime(true);
 
-        $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
 
         $i = 1;
         foreach ($params as $param) {
@@ -76,16 +77,20 @@ class PdoDatabase implements DatabaseInterface
             ++$i;
         }
 
-        $stmt->execute();
+            $stmt->execute();
 
-        if ($this->logQueries) {
-            $this->queries[] = [
-                'sql' => $sql,
-                'time' => microtime(true) - $startTime,
-            ];
+            if ($this->logQueries) {
+                $this->queries[] = [
+                    'sql' => $sql,
+                    'time' => microtime(true) - $startTime,
+                ];
+            }
+
+            return new PdoDatabaseResult($stmt);
+
+        } catch (\Exception $e) {
+            throw new DatabaseException($e->getMessage(), (int)$e->getCode(), $e);
         }
-
-        return new PdoDatabaseResult($stmt);
     }
 
     /**
