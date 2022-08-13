@@ -26,7 +26,8 @@ class MySqliDatabase implements DatabaseInterface
         string $database,
         string $username,
         string $password,
-        bool $usePersistentConnection = false
+        bool $usePersistentConnection = false,
+        int $errorReportingLevel = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
     ) {
         if ($usePersistentConnection) {
             $host = 'p:' . $host;
@@ -38,7 +39,7 @@ class MySqliDatabase implements DatabaseInterface
             throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        mysqli_report($errorReportingLevel);
     }
 
     /**
@@ -57,6 +58,7 @@ class MySqliDatabase implements DatabaseInterface
      */
     public function query(string $sql, array $params = []): MySqliDatabaseResult
     {
+        /** @var \mysqli_stmt|false $stmt */
         $stmt = $this->mysqli->prepare($sql);
 
         if (false === $stmt) {
