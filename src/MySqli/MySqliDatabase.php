@@ -157,6 +157,33 @@ class MySqliDatabase implements DatabaseInterface
     }
 
     /**
+     * Create and execute an UPDATE statement using a where valid IN ().
+     *
+     * @param array $data
+     * @param array $where
+     *
+     * @return int
+     */
+    public function updateUsingIn(string $table, array $data, array $where): int
+    {
+        $whereSegment = new QuerySegment('WHERE (');
+        $dataSegment = QuerySegment::fieldIn(key($where), reset($where));
+        $closingSegment = new QuerySegment(')');
+
+        $finalWhereSegment = $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
+
+        $query = Query::fromSegments([
+            new QuerySegment('UPDATE '.$this->secureTableField($table).' SET '),
+            $this->parseDataArray($data),
+            $finalWhereSegment,
+        ]);
+
+        $result = $this->runQuery($query);
+
+        return $result->rowCount();
+    }
+
+    /**
      * Create and execute an UPDATE statement on only the fields which have changed.
      *
      * @param array        $data  to update (key => value pairs)

@@ -46,6 +46,8 @@ interface DatabaseInterface
      */
     public function update(string $table, array $data, $where): int;
 
+    public function updateUsingIn(string $table, array $data, array $where): int;
+
     /**
      * Create and execute an UPDATE statement on only the fields which have changed.
      *
