@@ -53,6 +53,42 @@ final class QuerySegment
         return $query;
     }
 
+    public static function combine(self ...$segments): self
+    {
+        if (1 === count($segments)) {
+            return reset($segments);
+        }
+
+        $accumulator = array_shift($segments);
+
+        foreach ($segments as $segment) {
+            $accumulator = $accumulator->withSegment($segment);
+        }
+
+        return $accumulator;
+    }
+
+    public static function combineWithSeparator(string $separator, self ...$segments): self
+    {
+        if (1 === count($segments)) {
+            return reset($segments);
+        }
+
+        // We don't want to put $separator after the last segment
+        $lastSegment = array_pop($segments);
+
+        $segmentsWithSeparators = array_map(
+            function (QuerySegment $segment) use ($separator) {
+                return $segment->withSegment(new QuerySegment($separator));
+            },
+            $segments
+        );
+
+        $segmentsWithSeparators[] = $lastSegment;
+
+        return QuerySegment::combine(...$segmentsWithSeparators);
+    }
+
     public static function fieldIn(string $field, array $values, string $tablePrefix = ''): self
     {
         $sql = empty($tablePrefix) ? '' : '`' . $tablePrefix . '`.';
