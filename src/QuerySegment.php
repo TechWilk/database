@@ -45,7 +45,10 @@ final class QuerySegment
     {
         $query = clone $this;
         $query->sql .= ' ' . $segment->getSql();
-        $query->parameters += $segment->getParameters();
+        $query->parameters = array_merge(
+            $query->parameters,
+            $segment->getParameters()
+        );
 
         return $query;
     }
