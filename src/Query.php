@@ -53,7 +53,7 @@ final class Query
         return $query;
     }
 
-    public function __set(string $property, mixed $value)
+    public function __set(string $property, $value)
     {
         throw new \BadMethodCallException('Object is immutable.');
     }

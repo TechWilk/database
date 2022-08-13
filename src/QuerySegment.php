@@ -62,7 +62,7 @@ final class QuerySegment
         return new self($sql, $values);
     }
 
-    public function __set(string $property, mixed $value)
+    public function __set(string $property, $value)
     {
         throw new \BadMethodCallException('Object is immutable.');
     }
