@@ -62,20 +62,20 @@ class PdoDatabase implements DatabaseInterface
 
             $stmt = $this->pdo->prepare($sql);
 
-        $i = 1;
-        foreach ($params as $param) {
-            if (is_int($param)) {
-                $stmt->bindValue($i, $param, \PDO::PARAM_INT);
-            } elseif (is_bool($param)) {
-                $stmt->bindValue($i, $param, \PDO::PARAM_BOOL);
-            } elseif (is_null($param)) {
-                $stmt->bindValue($i, $param, \PDO::PARAM_NULL);
-            } else {
-                $stmt->bindValue($i, $param, \PDO::PARAM_STR);
-            }
+            $i = 1;
+            foreach ($params as $param) {
+                if (is_int($param)) {
+                    $stmt->bindValue($i, $param, \PDO::PARAM_INT);
+                } elseif (is_bool($param)) {
+                    $stmt->bindValue($i, $param, \PDO::PARAM_BOOL);
+                } elseif (is_null($param)) {
+                    $stmt->bindValue($i, $param, \PDO::PARAM_NULL);
+                } else {
+                    $stmt->bindValue($i, $param, \PDO::PARAM_STR);
+                }
 
-            ++$i;
-        }
+                ++$i;
+            }
 
             $stmt->execute();
 
@@ -87,9 +87,8 @@ class PdoDatabase implements DatabaseInterface
             }
 
             return new PdoDatabaseResult($stmt);
-
         } catch (\Exception $e) {
-            throw new DatabaseException($e->getMessage(), (int)$e->getCode(), $e);
+            throw new DatabaseException($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 

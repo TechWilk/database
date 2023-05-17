@@ -46,7 +46,6 @@ trait ValidQueryTestsTrait
             'id' => 3,
             'date' => '2022-03-03 00:00:00',
             'string' => 'third entry has been inserted',
-
         ];
         $result = $this->database->insert('table', $data);
 

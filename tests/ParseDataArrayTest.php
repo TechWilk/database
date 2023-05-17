@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace TechWilk\Database\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Exception\BadFieldException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\ParseDataArray;
 
 class ParseDataArrayTest extends TestCase
 {
@@ -82,7 +82,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` > ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'greater than or equal match' => [
@@ -91,7 +91,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` >= ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'less than match' => [
@@ -100,7 +100,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` < ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'less than or equal match' => [
@@ -109,7 +109,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` <= ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'not equal match' => [
@@ -118,7 +118,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` != ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'addition by' => [
@@ -127,7 +127,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` = `id` + ?',
                 [
-                    5
+                    5,
                 ],
             ],
             'more complex multiple parameters' => [
@@ -136,7 +136,7 @@ class ParseDataArrayTest extends TestCase
                 ],
                 '`id` = `id` + ?',
                 [
-                    5
+                    5,
                 ],
             ],
         ];

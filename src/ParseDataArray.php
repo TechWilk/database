@@ -74,7 +74,6 @@ trait ParseDataArray
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' ?';
                     $parameters[] = $value;
             }
-
         }
 
         $sql = implode($glue, $sqlSegments);
@@ -86,7 +85,6 @@ trait ParseDataArray
     {
         foreach ($this->validEquators as $equator) {
             if (str_ends_with($field, ' ' . $equator)) {
-
                 return $equator;
             }
         }

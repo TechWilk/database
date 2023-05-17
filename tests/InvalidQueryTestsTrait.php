@@ -37,7 +37,7 @@ trait InvalidQueryTestsTrait
         $data = [
             'id' => 3,
             'date' => '2022-03-03 00:00:00',
-            'string' => 'third entry has been inserted'
+            'string' => 'third entry has been inserted',
         ];
         $this->database->insert('table-does-not-exist', $data);
     }
@@ -47,7 +47,7 @@ trait InvalidQueryTestsTrait
         $this->expectException(DatabaseException::class);
 
         $data = [
-            'string' => 'second entry has been updated'
+            'string' => 'second entry has been updated',
         ];
         $this->database->update('table-does-not-exist', $data, ['id' => 2]);
     }
