@@ -66,7 +66,7 @@ class MySqliDatabase implements DatabaseInterface
             $stmt = $this->mysqli->prepare($sql);
 
             if (false === $stmt) {
-                $this->handleMysqliError();
+                $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
             }
 
             if (!empty($params)) {
@@ -91,14 +91,14 @@ class MySqliDatabase implements DatabaseInterface
             $stmt->execute();
 
             if (!empty($this->mysqli->error)) {
-                $this->handleMysqliError();
+                $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
             }
 
             return new MySqliDatabaseResult(
                 $stmt
             );
-        } catch (\Exception $e) {
-            throw new DatabaseException($e->getMessage(), $e->getCode(), $e);
+        } catch (\mysqli_sql_exception $e) {
+            $this->throwDatabaseException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -359,16 +359,16 @@ class MySqliDatabase implements DatabaseInterface
         return (int) $this->mysqli->insert_id;
     }
 
-    private function handleMysqliError(): void
+    private function throwDatabaseException(string $message, int $code, \Throwable $previous = null): void
     {
-        $errorMessage = 'Mysqli Error: (' . $this->mysqli->errno . '). ' . $this->mysqli->error;
+        $errorMessage = 'Mysqli Error: (' . $code . '). ' . $message;
         switch ($this->mysqli->errno) {
             case 1062:
-                throw new DuplicateDatabaseRecordException($errorMessage, $this->mysqli->errno);
+                throw new DuplicateDatabaseRecordException($errorMessage, $code, $previous);
             case 1213:
-                throw new DatabaseDeadlockException($errorMessage, $this->mysqli->errno);
+                throw new DatabaseDeadlockException($errorMessage, $code, $previous);
             default:
-                throw new DatabaseException($errorMessage, $this->mysqli->errno);
+                throw new DatabaseException($errorMessage, $code, $previous);
         }
     }
 

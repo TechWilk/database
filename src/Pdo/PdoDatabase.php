@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace TechWilk\Database\Pdo;
 
 use TechWilk\Database\DatabaseInterface;
+use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -87,8 +89,8 @@ class PdoDatabase implements DatabaseInterface
             }
 
             return new PdoDatabaseResult($stmt);
-        } catch (\Exception $e) {
-            throw new DatabaseException($e->getMessage(), (int) $e->getCode(), $e);
+        } catch (\PDOException $e) {
+            $this->throwDatabaseException($e);
         }
     }
 
@@ -350,6 +352,20 @@ class PdoDatabase implements DatabaseInterface
     public function lastInsertId(): int
     {
         return (int) $this->pdo->lastInsertId();
+    }
+
+    private function throwDatabaseException(\PDOException $exception): void
+    {
+        $errorMessage = 'PDO Error: (' . $exception->getCode() . '). ' . $exception->getMessage();
+        $code = (int) $exception->getCode();
+        switch ($code) {
+            case 23000:
+                throw new DuplicateDatabaseRecordException($errorMessage, $code, $exception);
+            case 40001:
+                throw new DatabaseDeadlockException($errorMessage, $code, $exception);
+            default:
+                throw new DatabaseException($errorMessage, $code, $exception);
+        }
     }
 
     public function __destruct()

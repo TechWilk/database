@@ -11,6 +11,7 @@ class PdoDatabaseTest extends TestCase
 {
     use ValidQueryTestsTrait;
     use InvalidQueryTestsTrait;
+    use DatabaseServerExceptionTestsTrait;
 
     protected $database;
 
