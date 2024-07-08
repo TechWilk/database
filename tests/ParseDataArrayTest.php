@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace TechWilk\Database\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TechWilk\Database\Exception\BadFieldException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 
 class ParseDataArrayTest extends TestCase
 {
     use ParseDataArray;
+    use MySqlSecureTableField;
 
     public function providerTestDataArray(): array
     {
@@ -140,22 +141,6 @@ class ParseDataArrayTest extends TestCase
                 ],
             ],
         ];
-    }
-
-    /**
-     * Returns table or field name surrounded by ` character.
-     */
-    protected function secureTableField(string $field): string
-    {
-        if (empty($field)) {
-            throw new BadFieldException('Field name contains no characters');
-        }
-
-        if (false !== strpos($field, '`')) {
-            throw new BadFieldException('Field name must not include ` character');
-        }
-
-        return '`' . $field . '`';
     }
 
     /**
