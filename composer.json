@@ -1,6 +1,6 @@
 {
     "name": "techwilk/database",
-    "description": "Simple PDO/MySQLi/SQLite wrapper to make perfoming SQL queries easier",
+    "description": "Simple PDO/MySQLi/SQLite wrapper to make performing SQL queries easier",
     "type": "library",
     "license": "MIT",
     "autoload": {
