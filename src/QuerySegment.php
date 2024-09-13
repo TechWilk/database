@@ -75,7 +75,7 @@ final class QuerySegment
         $lastSegment = array_pop($segments);
 
         $segmentsWithSeparators = array_map(
-            fn (QuerySegment $segment) => $segment->withSegment(new QuerySegment($separator)),
+            fn (QuerySegment $segment): QuerySegment => $segment->withSegment(new QuerySegment($separator)),
             $segments
         );
 
