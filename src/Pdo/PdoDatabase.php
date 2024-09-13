@@ -18,7 +18,7 @@ class PdoDatabase implements DatabaseInterface
     use MySqlSecureTableField;
     use ParseDataArray;
 
-    protected $pdo;
+    protected \PDO $pdo;
     private bool $logQueries = false;
     private array $queries = [];
 

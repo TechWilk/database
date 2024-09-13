@@ -21,7 +21,7 @@ class MySqliDatabase implements DatabaseInterface
     /**
      * @var \Mysqli
      */
-    protected $mysqli;
+    protected \mysqli $mysqli;
 
     public function __construct(
         string $host,
