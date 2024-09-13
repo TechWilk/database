@@ -26,7 +26,7 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type)
+    public function fetchArray($type): ?array
     {
         return $this->returnData;
     }
