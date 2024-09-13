@@ -301,7 +301,7 @@ class PdoDatabase implements DatabaseInterface
         return $result->rowCount();
     }
 
-    protected function createInsertSql(string $table, array ...$dataArrays)
+    protected function createInsertSql(string $table, array ...$dataArrays): QuerySegment
     {
         if (empty($dataArrays[0])) {
             throw new DatabaseException('No data to insert');
