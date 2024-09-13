@@ -51,7 +51,7 @@ class FakeDatabase implements DatabaseInterface
      *
      * @throws DatabaseException
      */
-    public function insert(string $table, array ...$dataArrays)
+    public function insert(string $table, array ...$dataArrays): int
     {
         return 1;
     }
