@@ -62,7 +62,7 @@ class FakeDatabase implements DatabaseInterface
      * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
      */
-    public function insertOnDuplicate(string $table, array $data, array $onDuplicate = [])
+    public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []): void
     {
         $querySegment = $this->createInsertSql($table, $data);
 

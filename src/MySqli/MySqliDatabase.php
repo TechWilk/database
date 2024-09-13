@@ -127,7 +127,7 @@ class MySqliDatabase implements DatabaseInterface
      *
      * @return void
      */
-    public function insertOnDuplicate(string $table, array $data, array $onDuplicate = [])
+    public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []): void
     {
         $querySegment = $this->createInsertSql($table, $data);
 

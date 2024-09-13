@@ -122,7 +122,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
      *
      * @throws DatabaseException
      */
-    private function checkResult(string $message)
+    private function checkResult(string $message): void
     {
         if (!$this->result) {
             throw new DatabaseException($message);
