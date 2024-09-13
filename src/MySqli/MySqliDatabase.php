@@ -111,7 +111,7 @@ class MySqliDatabase implements DatabaseInterface
      *
      * @throws DatabaseException
      */
-    public function insert(string $table, array ...$dataArrays)
+    public function insert(string $table, array ...$dataArrays): int
     {
         $querySegment = $this->createInsertSql($table, ...$dataArrays);
         $this->query($querySegment->getSql(), $querySegment->getParameters());

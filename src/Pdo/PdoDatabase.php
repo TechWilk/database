@@ -101,7 +101,7 @@ class PdoDatabase implements DatabaseInterface
      *
      * @return int insert id if only one insert, insert id of first if multiple inserts
      */
-    public function insert(string $table, array ...$dataArrays)
+    public function insert(string $table, array ...$dataArrays): int
     {
         $querySegment = $this->createInsertSql($table, ...$dataArrays);
         $result = $this->query($querySegment->getSql(), $querySegment->getParameters());
