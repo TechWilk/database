@@ -18,7 +18,7 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
     /**
      * Fetches next row as an object.
      */
-    public function fetchObject(string $className = \stdClass::class, array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = []): \stdClass
     {
         return (object) $this->returnData;
     }
