@@ -86,7 +86,7 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
         throw new DatabaseException('Function not available in PDO Database');
     }
 
-    public function getSql()
+    public function getSql(): string
     {
         return $this->stmt->queryString;
     }
