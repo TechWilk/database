@@ -17,8 +17,6 @@ class FakeDatabase implements DatabaseInterface
     use ParseDataArray;
     use MySqlSecureTableField;
 
-    private $returnData;
-
     public function __construct(
         private array $returnData = []
     ) {
