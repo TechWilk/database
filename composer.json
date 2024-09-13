@@ -19,11 +19,11 @@
             "email": "c@wilk.tech"
         }
     ],
-    "require": {},
     "require-dev": {
         "ext-mysqli":  "*",
         "friendsofphp/php-cs-fixer": "^3.16",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^10.0",
+        "rector/rector": "^1.2"
     },
     "scripts": {
         "test": "phpunit"
