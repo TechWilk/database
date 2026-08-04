@@ -8,6 +8,8 @@ use TechWilk\Database\DatabaseInterface;
 use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
 use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
+use TechWilk\Database\Exception\EmptyQueryException;
+use TechWilk\Database\Exception\InvalidTableException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -61,6 +63,10 @@ class PdoDatabase implements DatabaseInterface
     {
         try {
             $startTime = microtime(true);
+
+            if ('' === $sql) {
+                throw new EmptyQueryException('Query was empty');
+            }
 
             $stmt = $this->pdo->prepare($sql);
 
@@ -357,12 +363,16 @@ class PdoDatabase implements DatabaseInterface
     private function throwDatabaseException(\PDOException $exception): void
     {
         $errorMessage = 'PDO Error: (' . $exception->getCode() . '). ' . $exception->getMessage();
-        $code = (int) $exception->getCode();
-        switch ($code) {
-            case 23000:
+        $code = (int)$exception->getCode();
+        switch ($exception->getCode()) {
+            case '23000':
                 throw new DuplicateDatabaseRecordException($errorMessage, $code, $exception);
-            case 40001:
+            case '40001':
                 throw new DatabaseDeadlockException($errorMessage, $code, $exception);
+            case '42S02':
+                throw new InvalidTableException($errorMessage, $code, $exception);
+            case '42000':
+                throw new EmptyQueryException($errorMessage, $code, $exception);
             default:
                 throw new DatabaseException($errorMessage, $code, $exception);
         }

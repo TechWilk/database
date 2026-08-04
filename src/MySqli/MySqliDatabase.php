@@ -8,6 +8,8 @@ use TechWilk\Database\DatabaseInterface;
 use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
 use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
+use TechWilk\Database\Exception\EmptyQueryException;
+use TechWilk\Database\Exception\InvalidTableException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -367,6 +369,10 @@ class MySqliDatabase implements DatabaseInterface
                 throw new DuplicateDatabaseRecordException($errorMessage, $code, $previous);
             case 1213:
                 throw new DatabaseDeadlockException($errorMessage, $code, $previous);
+            case 1146:
+                throw new InvalidTableException($errorMessage, $code, $previous);
+            case 1065:
+                throw new EmptyQueryException($errorMessage, $code, $previous);
             default:
                 throw new DatabaseException($errorMessage, $code, $previous);
         }

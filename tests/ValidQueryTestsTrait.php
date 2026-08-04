@@ -22,7 +22,7 @@ trait ValidQueryTestsTrait
                 'date' => '2021-02-02 00:00:00',
                 'string' => 'some more test text',
             ],
-        ], $result->getArray());
+        ], $result->fetchAllArray());
     }
 
     public function testSelectWithParameters(): void
@@ -37,7 +37,7 @@ trait ValidQueryTestsTrait
                 'date' => '2020-01-01 00:00:00',
                 'string' => 'this is some text',
             ],
-        ], $result->getArray());
+        ], $result->fetchAllArray());
     }
 
     public function testInsert(): void
@@ -56,7 +56,7 @@ trait ValidQueryTestsTrait
         $result = $this->database->query('SELECT * FROM `table` WHERE id = ?', $parameters);
 
         $this->assertEquals(1, $result->rowCount());
-        $this->assertEquals([$data], $result->getArray());
+        $this->assertEquals([$data], $result->fetchAllArray());
     }
 
     public function testUpdate(): void
@@ -74,7 +74,7 @@ trait ValidQueryTestsTrait
         $result = $this->database->query('SELECT string FROM `table` WHERE id = ?', $parameters);
 
         $this->assertEquals(1, $result->rowCount());
-        $this->assertEquals([$data], $result->getArray());
+        $this->assertEquals([$data], $result->fetchAllArray());
     }
 
     public function testDelete(): void
@@ -89,6 +89,6 @@ trait ValidQueryTestsTrait
         $result = $this->database->query('SELECT string FROM `table` WHERE id = ?', $parameters);
 
         $this->assertEquals(0, $result->rowCount());
-        $this->assertEquals([], $result->getArray());
+        $this->assertEquals([], $result->fetchAllArray());
     }
 }
