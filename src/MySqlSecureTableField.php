@@ -13,7 +13,7 @@ trait MySqlSecureTableField
      */
     protected function secureTableField(string $field): string
     {
-        if (empty($field)) {
+        if ($field === '') {
             throw new BadFieldException('Field name contains no characters');
         }
 

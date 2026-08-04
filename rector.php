@@ -11,4 +11,23 @@ return RectorConfig::configure()
     ])
     // uncomment to reach your current PHP version
     ->withPhpSets()
-    ->withTypeCoverageLevel(100);
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+        typeDeclarations: true,
+        privatization: true,
+        //naming: true,
+        instanceOf: true,
+        earlyReturn: true,
+        strictBooleans: true,
+        //rectorPreset: true,
+        phpunitCodeQuality: true,
+        phpunit: true,
+    )
+    ->withImportNames(
+        importNames: true,
+        importDocBlockNames: true,
+        importShortClasses: false,
+        removeUnusedImports: true,
+    );

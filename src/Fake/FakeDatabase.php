@@ -151,7 +151,7 @@ class FakeDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 
@@ -193,7 +193,7 @@ class FakeDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 

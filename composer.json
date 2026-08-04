@@ -29,6 +29,8 @@
         "rector/rector": "^1.2"
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "rector": "rector process --dry-run",
+        "rector:fix": "rector process"
     }
 }

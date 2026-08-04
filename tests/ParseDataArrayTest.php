@@ -15,131 +15,129 @@ class ParseDataArrayTest extends TestCase
     use ParseDataArray;
     use MySqlSecureTableField;
 
-    public function providerTestDataArray(): array
+    public static function providerTestDataArray(): \Iterator
     {
-        return [
-            'simpleParams' => [
-                [
-                    'id' => 1,
-                    'name' => 'test entry',
-                    'date' => '2000-01-01',
-                    'valid' => true,
-                    'nothingHere' => null,
-                ],
-                '`id` = ?, `name` = ?, `date` = ?, `valid` = ?, `nothingHere` = ?',
-                [
-                    1,
-                    'test entry',
-                    '2000-01-01',
-                    true,
-                    null,
-                ],
+        yield 'simpleParams' => [
+            [
+                'id' => 1,
+                'name' => 'test entry',
+                'date' => '2000-01-01',
+                'valid' => true,
+                'nothingHere' => null,
             ],
-            'like match' => [
-                [
-                    'name LIKE' => '%test%',
-                ],
-                '`name` LIKE ?',
-                [
-                    '%test%',
-                ],
+            '`id` = ?, `name` = ?, `date` = ?, `valid` = ?, `nothingHere` = ?',
+            [
+                1,
+                'test entry',
+                '2000-01-01',
+                true,
+                null,
             ],
-            'is null match' => [
-                [
-                    'nothingHere IS' => 'unused',
-                ],
-                '`nothingHere` IS NULL',
-                [],
+        ];
+        yield 'like match' => [
+            [
+                'name LIKE' => '%test%',
             ],
-            'is not match' => [
-                [
-                    'nothingHere IS NOT' => 'unused',
-                ],
-                '`nothingHere` IS NOT NULL',
-                [],
+            '`name` LIKE ?',
+            [
+                '%test%',
             ],
-            'field in single match' => [
-                [
-                    'id IN' => [5],
-                ],
-                '`id` IN (?)',
-                [
-                    5,
-                ],
+        ];
+        yield 'is null match' => [
+            [
+                'nothingHere IS' => 'unused',
             ],
-            'field in multiple match' => [
-                [
-                    'id IN' => [5, 6, 7],
-                ],
-                '`id` IN (?,?,?)',
-                [
-                    5,
-                    6,
-                    7,
-                ],
+            '`nothingHere` IS NULL',
+            [],
+        ];
+        yield 'is not match' => [
+            [
+                'nothingHere IS NOT' => 'unused',
             ],
-            'greater than match' => [
-                [
-                    'id >' => 5,
-                ],
-                '`id` > ?',
-                [
-                    5,
-                ],
+            '`nothingHere` IS NOT NULL',
+            [],
+        ];
+        yield 'field in single match' => [
+            [
+                'id IN' => [5],
             ],
-            'greater than or equal match' => [
-                [
-                    'id >=' => 5,
-                ],
-                '`id` >= ?',
-                [
-                    5,
-                ],
+            '`id` IN (?)',
+            [
+                5,
             ],
-            'less than match' => [
-                [
-                    'id <' => 5,
-                ],
-                '`id` < ?',
-                [
-                    5,
-                ],
+        ];
+        yield 'field in multiple match' => [
+            [
+                'id IN' => [5, 6, 7],
             ],
-            'less than or equal match' => [
-                [
-                    'id <=' => 5,
-                ],
-                '`id` <= ?',
-                [
-                    5,
-                ],
+            '`id` IN (?,?,?)',
+            [
+                5,
+                6,
+                7,
             ],
-            'not equal match' => [
-                [
-                    'id !=' => 5,
-                ],
-                '`id` != ?',
-                [
-                    5,
-                ],
+        ];
+        yield 'greater than match' => [
+            [
+                'id >' => 5,
             ],
-            'addition by' => [
-                [
-                    'id +' => 5,
-                ],
-                '`id` = `id` + ?',
-                [
-                    5,
-                ],
+            '`id` > ?',
+            [
+                5,
             ],
-            'more complex multiple parameters' => [
-                [
-                    'id +' => 5,
-                ],
-                '`id` = `id` + ?',
-                [
-                    5,
-                ],
+        ];
+        yield 'greater than or equal match' => [
+            [
+                'id >=' => 5,
+            ],
+            '`id` >= ?',
+            [
+                5,
+            ],
+        ];
+        yield 'less than match' => [
+            [
+                'id <' => 5,
+            ],
+            '`id` < ?',
+            [
+                5,
+            ],
+        ];
+        yield 'less than or equal match' => [
+            [
+                'id <=' => 5,
+            ],
+            '`id` <= ?',
+            [
+                5,
+            ],
+        ];
+        yield 'not equal match' => [
+            [
+                'id !=' => 5,
+            ],
+            '`id` != ?',
+            [
+                5,
+            ],
+        ];
+        yield 'addition by' => [
+            [
+                'id +' => 5,
+            ],
+            '`id` = `id` + ?',
+            [
+                5,
+            ],
+        ];
+        yield 'more complex multiple parameters' => [
+            [
+                'id +' => 5,
+            ],
+            '`id` = `id` + ?',
+            [
+                5,
             ],
         ];
     }
@@ -154,7 +152,7 @@ class ParseDataArrayTest extends TestCase
     ): void {
         $queryStatement = $this->parseDataArray($data);
 
-        $this->assertEquals($expectedSql, $queryStatement->getSql());
+        $this->assertSame($expectedSql, $queryStatement->getSql());
         $this->assertEquals($expectedParameters, $queryStatement->getParameters());
     }
 

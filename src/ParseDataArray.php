@@ -38,7 +38,7 @@ trait ParseDataArray
      */
     protected function parseDataArray(array $data, string $glue = ', '): QuerySegment
     {
-        if (empty($data)) {
+        if ($data === []) {
             throw new DatabaseException('No data');
         }
 
@@ -63,6 +63,7 @@ trait ParseDataArray
                     if (!is_array($value) || [] === $value) {
                         throw new BadValueException('Invalid value for SQL IN statement');
                     }
+
                     $placeholders = implode(',', array_fill(0, count($value), '?'));
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' (' . $placeholders . ')';
                     $parameters = array_merge($parameters, $value);

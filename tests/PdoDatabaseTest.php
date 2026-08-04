@@ -15,7 +15,7 @@ class PdoDatabaseTest extends TestCase
 
     protected $database;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->database = new PdoDatabase(
             getenv('MYSQL_HOST'),
@@ -30,7 +30,7 @@ class PdoDatabaseTest extends TestCase
         $sqlContent = file_get_contents(__DIR__ . '/data/seeds.sql');
         $sqlStatements = explode(';', $sqlContent);
         foreach ($sqlStatements as $sql) {
-            if (0 === strlen(trim($sql))) {
+            if (trim($sql) === '') {
                 continue;
             }
 

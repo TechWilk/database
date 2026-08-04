@@ -118,8 +118,6 @@ interface DatabaseResultInterface
 
     /**
      * Returns the SQL statement run on the database.
-     *
-     * @return string
      */
     public function getSql(): string;
 }

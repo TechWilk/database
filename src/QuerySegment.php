@@ -92,7 +92,7 @@ final class QuerySegment
             throw new BadValueException('Invalid value for SQL IN statement');
         }
 
-        $sql = empty($tablePrefix) ? '' : '`' . $tablePrefix . '`.';
+        $sql = $tablePrefix === '' ? '' : '`' . $tablePrefix . '`.';
         $sql .= '`' . $field . '` IN (';
         $sql .= implode(',', array_fill(0, count($values), '?'));
         $sql .= ')';

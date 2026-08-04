@@ -21,7 +21,9 @@ class PdoDatabase implements DatabaseInterface
     use ParseDataArray;
 
     protected \PDO $pdo;
+
     private bool $logQueries = false;
+
     private array $queries = [];
 
     public function __construct(
@@ -35,7 +37,7 @@ class PdoDatabase implements DatabaseInterface
         $dsn = 'mysql:' . implode(';', [
             'host=' . $host,
             'dbname=' . $database,
-            $port ? 'port=' . $port : null,
+            $port !== null && $port !== 0 ? 'port=' . $port : null,
             'charset=utf8mb4',
         ]);
 
@@ -95,8 +97,8 @@ class PdoDatabase implements DatabaseInterface
             }
 
             return new PdoDatabaseResult($stmt);
-        } catch (\PDOException $e) {
-            $this->throwDatabaseException($e);
+        } catch (\PDOException $pdoException) {
+            $this->throwDatabaseException($pdoException);
         }
     }
 
@@ -110,7 +112,7 @@ class PdoDatabase implements DatabaseInterface
     public function insert(string $table, array ...$dataArrays): int
     {
         $querySegment = $this->createInsertSql($table, ...$dataArrays);
-        $result = $this->query($querySegment->getSql(), $querySegment->getParameters());
+        $this->query($querySegment->getSql(), $querySegment->getParameters());
 
         return $this->lastInsertId();
     }
@@ -120,8 +122,6 @@ class PdoDatabase implements DatabaseInterface
      *
      * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
-     *
-     * @return void
      */
     public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []): void
     {
@@ -212,7 +212,7 @@ class PdoDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 
@@ -254,7 +254,7 @@ class PdoDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 

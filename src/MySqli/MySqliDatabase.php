@@ -40,7 +40,7 @@ class MySqliDatabase implements DatabaseInterface
 
         $this->mysqli = new \mysqli($host, $username, $password, $database, $port);
 
-        if ($this->mysqli->connect_errno) {
+        if ($this->mysqli->connect_errno !== 0) {
             throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
@@ -71,7 +71,7 @@ class MySqliDatabase implements DatabaseInterface
                 $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
             }
 
-            if (!empty($params)) {
+            if ($params !== []) {
                 $typeString = '';
                 $typeParamArray = [];
 
@@ -79,7 +79,7 @@ class MySqliDatabase implements DatabaseInterface
                     if (is_int($param) || is_bool($param)) {
                         $typeString .= 'i';
                         $typeParamArray[] = $param;
-                    } elseif (is_double($param)) {
+                    } elseif (is_float($param)) {
                         $typeString .= 'd';
                         $typeParamArray[] = $param;
                     } else {
@@ -87,20 +87,21 @@ class MySqliDatabase implements DatabaseInterface
                         $typeParamArray[] = $param;
                     }
                 }
+
                 $stmt->bind_param($typeString, ...$typeParamArray);
             }
 
             $stmt->execute();
 
-            if (!empty($this->mysqli->error)) {
+            if ($this->mysqli->errno !== 0) {
                 $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
             }
 
             return new MySqliDatabaseResult(
                 $stmt
             );
-        } catch (\mysqli_sql_exception $e) {
-            $this->throwDatabaseException($e->getMessage(), $e->getCode(), $e);
+        } catch (\mysqli_sql_exception $mysqlisqlexception) {
+            $this->throwDatabaseException($mysqlisqlexception->getMessage(), $mysqlisqlexception->getCode(), $mysqlisqlexception);
         }
     }
 
@@ -126,8 +127,6 @@ class MySqliDatabase implements DatabaseInterface
      *
      * @param array $data        to insert (key => value pairs)
      * @param array $onDuplicate data to update on duplicate (optional)
-     *
-     * @return void
      */
     public function insertOnDuplicate(string $table, array $data, array $onDuplicate = []): void
     {
@@ -218,7 +217,7 @@ class MySqliDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 
@@ -260,7 +259,7 @@ class MySqliDatabase implements DatabaseInterface
         }
 
         // nothing to update
-        if (empty($data)) {
+        if ($data === []) {
             return 0;
         }
 

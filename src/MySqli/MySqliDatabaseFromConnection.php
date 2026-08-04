@@ -11,7 +11,7 @@ class MySqliDatabaseFromConnection extends MySqliDatabase
     public function __construct(
         protected \mysqli $mysqli
     ) {
-        if ($this->mysqli->connect_errno) {
+        if ($this->mysqli->connect_errno !== 0) {
             throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
         }
 
