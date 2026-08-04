@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TechWilk\Database;
 
+use stdClass;
 use TechWilk\Database\Exception\DatabaseException;
 
 interface DatabaseResultInterface
@@ -13,21 +14,21 @@ interface DatabaseResultInterface
      *
      * alias of self::fetchObject()
      */
-    public function fetch(string $className = \stdClass::class, array $params = []);
+    public function fetch(string $className = \stdClass::class, array $params = []): ?stdClass;
 
     /**
      * Fetches next row as an object.
      *
      * @throws DatabaseException
      */
-    public function fetchObject(string $className = \stdClass::class, array $params = []);
+    public function fetchObject(string $className = \stdClass::class, array $params = []): ?stdClass;
 
     /**
      * Fetches next row.
      *
      * @throws DatabaseException
      */
-    public function fetchArray($type);
+    public function fetchArray($type): ?array;
 
     /**
      * Fetches all rows.
@@ -75,7 +76,7 @@ interface DatabaseResultInterface
     /**
      * Resets the pointer for data seeking.
      */
-    public function reset();
+    public function reset(): void;
 
     // ---- aliases for people used to the "get" syntax ----
     // ---- implemented in AbstractDatabaseInterface ----
@@ -85,7 +86,7 @@ interface DatabaseResultInterface
      *
      * @see self::fetch()
      */
-    public function get();
+    public function get(): ?stdClass;
 
     /**
      * Alias for fetchAll().
@@ -95,18 +96,18 @@ interface DatabaseResultInterface
     public function getAll(string $className = \stdClass::class, array $params = []): array;
 
     /**
-     * Alias for fetchAllObject().
+     * Alias for fetchObject().
      *
-     * @see self::fetchAllObject()
+     * @see self::fetchObject()
      */
-    public function getObject(string $className = \stdClass::class, array $params = []);
+    public function getObject(string $className = \stdClass::class, array $params = []): ?stdClass;
 
     /**
-     * Alias for fetchAllArray().
+     * Alias for fetchArray().
      *
-     * @see self::fetchAllArray()
+     * @see self::fetchArray()
      */
-    public function getArray();
+    public function getArray($type): ?array;
 
     /**
      * Alias for fetchColumn().
@@ -120,5 +121,5 @@ interface DatabaseResultInterface
      *
      * @return string
      */
-    public function getSql();
+    public function getSql(): string;
 }

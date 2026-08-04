@@ -67,12 +67,12 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
     /**
      * Resets the pointer for data seeking.
      */
-    public function reset()
+    public function reset(): never
     {
         throw new DatabaseException('Function not available');
     }
 
-    public function getSql()
+    public function getSql(): never
     {
         throw new DatabaseException('Function not available');
     }

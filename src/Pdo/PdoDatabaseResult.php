@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\Pdo;
 
+use stdClass;
 use TechWilk\Database\AbstractDatabaseResult;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
@@ -18,7 +19,7 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
     /**
      * Fetches next row as an object.
      */
-    public function fetchObject(string $className = \stdClass::class, array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = []): ?stdClass
     {
         if (\stdClass::class === $className) {
             return $this->stmt->fetch(\PDO::FETCH_OBJ);
@@ -32,7 +33,7 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type = \PDO::FETCH_ASSOC)
+    public function fetchArray($type = \PDO::FETCH_ASSOC): ?array
     {
         $array = $this->stmt->fetch($type);
 
@@ -81,7 +82,7 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
     /**
      * Resets the pointer for data seeking.
      */
-    public function reset()
+    public function reset(): never
     {
         throw new DatabaseException('Function not available in PDO Database');
     }

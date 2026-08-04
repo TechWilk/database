@@ -19,6 +19,9 @@
             "email": "c@wilk.tech"
         }
     ],
+    "require": {
+        "php": ">=7.4"
+    },
     "require-dev": {
         "ext-mysqli":  "*",
         "friendsofphp/php-cs-fixer": "^3.16",

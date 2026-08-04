@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TechWilk\Database;
 
+use stdClass;
+
 abstract class AbstractDatabaseResult implements DatabaseResultInterface
 {
     /**
@@ -11,7 +13,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetchObject()
      */
-    public function fetch(string $className = \stdClass::class, array $params = [])
+    public function fetch(string $className = \stdClass::class, array $params = []): ?stdClass
     {
         return $this->fetchObject($className, $params);
     }
@@ -57,7 +59,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetch()
      */
-    public function get()
+    public function get(): ?stdClass
     {
         return $this->fetch();
     }
@@ -73,23 +75,23 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     }
 
     /**
-     * Alias for fetchAllObject().
+     * Alias for fetchObject().
      *
-     * @see self::fetchAllObject()
+     * @see self::fetchObject()
      */
-    public function getObject(string $className = \stdClass::class, array $params = [])
+    public function getObject(string $className = \stdClass::class, array $params = []): ?stdClass
     {
-        return $this->fetchAllObject($className, $params);
+        return $this->fetchObject($className, $params);
     }
 
     /**
-     * Alias for fetchAllArray().
+     * Alias for fetchArray().
      *
-     * @see self::fetchAllArray()
+     * @see self::fetchArray()
      */
-    public function getArray(): array
+    public function getArray($type): ?array
     {
-        return $this->fetchAllArray();
+        return $this->fetchArray($type);
     }
 
     /**

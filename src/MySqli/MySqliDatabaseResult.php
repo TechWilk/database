@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\MySqli;
 
+use stdClass;
 use TechWilk\Database\AbstractDatabaseResult;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
@@ -28,7 +29,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
      *
      * @throws DatabaseException
      */
-    public function fetchObject(string $className = \stdClass::class, array $params = [])
+    public function fetchObject(string $className = \stdClass::class, array $params = []): ?stdClass
     {
         $this->checkResult('Cannot call fetchObject without a result');
 
@@ -42,7 +43,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type = MYSQLI_ASSOC)
+    public function fetchArray($type = MYSQLI_ASSOC): ?array
     {
         $this->checkResult('Cannot call fetchArray without a result');
 
@@ -105,13 +106,13 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     /**
      * Resets the pointer for data seeking.
      */
-    public function reset()
+    public function reset(): never
     {
         // TODO Need see if this is still wanted for mysli
         throw new DatabaseException('Function not available');
     }
 
-    public function getSql()
+    public function getSql(): never
     {
         // TODO this is not available in my sqli, not used anywhere
         throw new DatabaseException('Function not available');
