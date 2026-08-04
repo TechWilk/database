@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database\Tests;
 
 use PHPUnit\Framework\TestCase;
+use TechWilk\Database\Exception\BadValueException;
 use TechWilk\Database\Exception\DatabaseException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
@@ -166,8 +167,15 @@ class ParseDataArrayTest extends TestCase
 
     public function testDataArrayFailsWithInvalidFieldInExpression(): void
     {
-        $this->expectException(DatabaseException::class);
+        $this->expectException(BadValueException::class);
 
         $this->parseDataArray(['id IN' => 'not an array']);
+    }
+
+    public function testDataArrayFailsWithEmptyFieldInExpression(): void
+    {
+        $this->expectException(BadValueException::class);
+
+        $this->parseDataArray(['id IN' => []]);
     }
 }

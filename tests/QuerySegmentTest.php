@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database\Tests;
 
 use PHPUnit\Framework\TestCase;
+use TechWilk\Database\Exception\BadValueException;
 use TechWilk\Database\QuerySegment;
 
 class QuerySegmentTest extends TestCase
@@ -72,5 +73,13 @@ class QuerySegmentTest extends TestCase
 
         $this->assertSame('`id` IN (?,?,?)', $segment->getSql());
         $this->assertSame([5, 6, 7], $segment->getParameters());
+    }
+
+    public function testFieldInWithEmptyValuesThrows(): void
+    {
+        $this->expectException(BadValueException::class);
+        $this->expectExceptionMessage('Invalid value for SQL IN statement');
+
+        QuerySegment::fieldIn('id', []);
     }
 }

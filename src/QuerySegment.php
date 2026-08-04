@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TechWilk\Database;
 
+use TechWilk\Database\Exception\BadValueException;
+
 final class QuerySegment
 {
     public function __construct(
@@ -86,6 +88,10 @@ final class QuerySegment
 
     public static function fieldIn(string $field, array $values, string $tablePrefix = ''): self
     {
+        if ([] === $values) {
+            throw new BadValueException('Invalid value for SQL IN statement');
+        }
+
         $sql = empty($tablePrefix) ? '' : '`' . $tablePrefix . '`.';
         $sql .= '`' . $field . '` IN (';
         $sql .= implode(',', array_fill(0, count($values), '?'));

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TechWilk\Database;
 
+use TechWilk\Database\Exception\BadValueException;
 use TechWilk\Database\Exception\DatabaseException;
 
 trait ParseDataArray
@@ -33,6 +34,7 @@ trait ParseDataArray
      *                     or ' AND ' for WHERE clauses
      *
      * @throws DatabaseException
+     * @throws BadValueException
      */
     protected function parseDataArray(array $data, string $glue = ', '): QuerySegment
     {
@@ -58,8 +60,8 @@ trait ParseDataArray
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' NULL';
                     break;
                 case 'IN':
-                    if (!is_array($value)) {
-                        throw new DatabaseException('Invalid value for SQL IN statement');
+                    if (!is_array($value) || [] === $value) {
+                        throw new BadValueException('Invalid value for SQL IN statement');
                     }
                     $placeholders = implode(',', array_fill(0, count($value), '?'));
                     $sqlSegments[] = $this->secureTableField($field) . ' ' . $equator . ' (' . $placeholders . ')';
