@@ -91,10 +91,8 @@ class MySqliDatabase implements DatabaseInterface
                 $stmt->bind_param($typeString, ...$typeParamArray);
             }
 
-            $stmt->execute();
-
-            if ($this->mysqli->errno !== 0) {
-                $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
+            if (!$stmt->execute()) {
+                $this->throwDatabaseException($stmt->error, $stmt->errno);
             }
 
             return new MySqliDatabaseResult(
@@ -363,7 +361,7 @@ class MySqliDatabase implements DatabaseInterface
     private function throwDatabaseException(string $message, int $code, \Throwable $previous = null): void
     {
         $errorMessage = 'Mysqli Error: (' . $code . '). ' . $message;
-        switch ($this->mysqli->errno) {
+        switch ($code) {
             case 1062:
                 throw new DuplicateDatabaseRecordException($errorMessage, $code, $previous);
             case 1213:
