@@ -2,16 +2,14 @@ image: debian/bookworm
 repositories:
   sury: https://packages.sury.org/php/ bookworm main 0x15058500a0235d97f5d10063b188e2b695bd4743
 packages:
-  - php8.2-cli
-  - php8.2-dom
-  - php8.2-mbstring
-  - php8.2-mysql
+  - php8.5-cli
+  - php8.5-dom
+  - php8.5-mbstring
+  - php8.5-mysql
   # Dependencies for composer
   - wget
-  - php8.2-zip
+  - php8.5-zip
   - unzip
-  # Dependencies for deployment
-  - rsync
   # Dependencies for tests
   - mariadb-server
 environment:

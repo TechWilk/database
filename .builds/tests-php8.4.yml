@@ -2,13 +2,13 @@ image: debian/bookworm
 repositories:
   sury: https://packages.sury.org/php/ bookworm main 0x15058500a0235d97f5d10063b188e2b695bd4743
 packages:
-  - php7.4-cli
-  - php7.4-dom
-  - php7.4-mbstring
-  - php7.4-mysql
+  - php8.4-cli
+  - php8.4-dom
+  - php8.4-mbstring
+  - php8.4-mysql
   # Dependencies for composer
   - wget
-  - php7.4-zip
+  - php8.4-zip
   - unzip
   # Dependencies for tests
   - mariadb-server
