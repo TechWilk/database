@@ -1,0 +1,13 @@
+image: archlinux
+packages:
+  - php
+  - composer
+sources:
+  - https://git.sr.ht/~techwilk/database
+tasks:
+  - setup: |
+      cd database
+      composer install
+  - test: |
+      cd database
+      composer test
