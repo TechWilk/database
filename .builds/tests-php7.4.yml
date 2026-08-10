@@ -25,7 +25,7 @@ tasks:
       sudo service mariadb start
       sudo mysql -e "
         CREATE DATABASE tests;
-=        CREATE USER 'tests'@'127.0.0.1' IDENTIFIED BY 'create-random-password-here';
+        CREATE USER 'tests'@'127.0.0.1' IDENTIFIED BY 'create-random-password-here';
         GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER ON tests.* TO 'tests'@'127.0.0.1';
         FLUSH PRIVILEGES;
       "
