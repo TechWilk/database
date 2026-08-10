@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\MySqli;
 
-use TechWilk\Database\Exception\DatabaseException;
-
 class MySqliDatabaseFromConnection extends MySqliDatabase
 {
     public function __construct(
         protected \mysqli $mysqli
     ) {
         if ($this->mysqli->connect_errno !== 0) {
-            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
+            throw self::createExceptionFromMysqliError(
+                (string) $this->mysqli->connect_error,
+                $this->mysqli->connect_errno,
+                $this->mysqli->sqlstate,
+            );
         }
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);

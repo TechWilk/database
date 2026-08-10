@@ -6,6 +6,7 @@ namespace TechWilk\Database;
 
 use TechWilk\Database\Exception\BadValueException;
 use TechWilk\Database\Exception\DatabaseException;
+use TechWilk\Database\Exception\DatabaseQueryException;
 
 trait ParseDataArray
 {
@@ -61,7 +62,10 @@ trait ParseDataArray
                     break;
                 case 'IN':
                     if (!is_array($value) || [] === $value) {
-                        throw new BadValueException('Invalid value for SQL IN statement');
+                        throw new BadValueException(
+                            'Invalid value for SQL IN statement',
+                            DatabaseQueryException::SQLSTATE_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION,
+                        );
                     }
 
                     $placeholders = implode(',', array_fill(0, count($value), '?'));

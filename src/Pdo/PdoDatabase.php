@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\Pdo;
 
+use TechWilk\Database\DatabaseErrorMapper;
 use TechWilk\Database\DatabaseInterface;
-use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
-use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
 use TechWilk\Database\Exception\EmptyQueryException;
-use TechWilk\Database\Exception\InvalidTableException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -41,10 +39,14 @@ class PdoDatabase implements DatabaseInterface
             'charset=utf8mb4',
         ]);
 
-        $this->pdo = new \PDO($dsn, $username, $password, [
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_PERSISTENT => $usePersistentConnection,
-        ]);
+        try {
+            $this->pdo = new \PDO($dsn, $username, $password, [
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_PERSISTENT => $usePersistentConnection,
+            ]);
+        } catch (\PDOException $pdoException) {
+            throw self::createExceptionFromPdoException($pdoException);
+        }
     }
 
     /**
@@ -98,7 +100,7 @@ class PdoDatabase implements DatabaseInterface
 
             return new PdoDatabaseResult($stmt);
         } catch (\PDOException $pdoException) {
-            $this->throwDatabaseException($pdoException);
+            throw self::createExceptionFromPdoException($pdoException);
         }
     }
 
@@ -360,22 +362,19 @@ class PdoDatabase implements DatabaseInterface
         return (int) $this->pdo->lastInsertId();
     }
 
-    private function throwDatabaseException(\PDOException $exception): void
+    private static function createExceptionFromPdoException(\PDOException $exception): DatabaseException
     {
-        $errorMessage = 'PDO Error: (' . $exception->getCode() . '). ' . $exception->getMessage();
-        $code = (int)$exception->getCode();
-        switch ($exception->getCode()) {
-            case '23000':
-                throw new DuplicateDatabaseRecordException($errorMessage, $code, $exception);
-            case '40001':
-                throw new DatabaseDeadlockException($errorMessage, $code, $exception);
-            case '42S02':
-                throw new InvalidTableException($errorMessage, $code, $exception);
-            case '42000':
-                throw new EmptyQueryException($errorMessage, $code, $exception);
-            default:
-                throw new DatabaseException($errorMessage, $code, $exception);
-        }
+        $sqlState = isset($exception->errorInfo[0]) && is_string($exception->errorInfo[0])
+            ? $exception->errorInfo[0]
+            : null;
+        $driverCode = isset($exception->errorInfo[1]) ? (int) $exception->errorInfo[1] : 0;
+
+        return DatabaseErrorMapper::createException(
+            'PDO Error: (' . $driverCode . '). ' . $exception->getMessage(),
+            $sqlState,
+            $driverCode,
+            $exception
+        );
     }
 
     public function __destruct()

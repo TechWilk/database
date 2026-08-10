@@ -2,7 +2,7 @@
 
 A lightweight wrapper around PDO/MySqli/SQLite with a consistent interface and includes helper functions to build and run queries quickly and easily.
 
-For select statements and other complex queries you are expected to write raw paramatarised sql, using the "question mark" syntax.
+For select statements and other complex queries you are expected to write raw parametrised sql, using the "question mark" syntax.
 
 ## Installation
 
@@ -147,6 +147,48 @@ $rowCount = $database->delete('table', ['id' => 3]);
 var_dump($rowCount);
 ```
 
+## Exceptions
+
+This library will always throw exceptions when an error is encountered regardless of the database driver's configuration (database errors are converted into exceptions when necessary).
+
+Exceptions live under the namespace `TechWilk\Database\Exception\`. All exceptions inherit from `DatabaseException` (the root) and are grouped underneath in two levels of hierarchy (root, parent, leaf).
+Where possible these parent groupings align with the SQLSTATE categorisation, however a few leaf errors have been recategorised to a more appropriate parent.
+
+Catch a category **parent** when you care about intent, an error of that type (e.g. `IntegrityConstraintException`, `DatabaseQueryException`, `DatabaseConnectionException`).
+
+Catch a specific **leaf** when you need to perform logic on the specific error (e.g. `DuplicateDatabaseRecordException`, `EmptyQueryException`, `InvalidTableException`).
+
+Each exception includes it's `$previous` driver specific exception in case you need to access it (though only if the driver actually threw the exception).
+Exception `getCode()` is the vendor errno integer from the specific database driver, whereas `getSqlState()` is the SQLSTATE string.
+Most driver codes are available on the exception classes as class constants for your convenience and to avoid the need for magic numbers in your code.
+
+To learn more, see `TechWilk\Database\DatabaseErrorMapper`.
+
+### Hierarchy
+
+- `DatabaseException`
+    - `DatabaseAccessDeniedException`
+    - `DatabaseConnectionException`
+    - `DatabaseDataException`
+    - `DatabaseFeatureNotSupportedException`
+    - `DatabaseLimitExceededException`
+    - `DatabaseObjectExistsException`
+    - `DatabaseObjectNotFoundException`
+        - `InvalidTableException`
+    - `DatabaseQueryException`
+        - `BadFieldException`
+        - `BadValueException`
+        - `EmptyQueryException`
+    - `DatabaseTransactionException`
+        - `DatabaseReadOnlyException`
+    - `DatabaseTransactionRollbackException`
+        - `DatabaseDeadlockException`
+    - `IntegrityConstraintException`
+        - `DuplicateDatabaseRecordException`
+
+### Notes
+
+**Migration note (PDO):** versions higher than 1.0.3 include a fix for an error handling bug with our PDO wrapper (mysqli was unaffected) where `DuplicateDatabaseRecordException` was thrown for any `IntegrityConstraintException` rather than just duplicate records, and `EmptyQueryException` was thrown for any "bad sql". If you were relying on this behaviour please now use the `IntegrityConstraintException` and `DatabaseQueryException` category parents respectively.
 
 
 ---

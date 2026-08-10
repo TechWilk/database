@@ -6,6 +6,7 @@ namespace TechWilk\Database\MySqli;
 
 use stdClass;
 use TechWilk\Database\AbstractDatabaseResult;
+use TechWilk\Database\DatabaseErrorMapper;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
 
@@ -20,6 +21,15 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
         protected \mysqli_stmt $stmt
     ) {
         $this->result = $stmt->get_result();
+
+        // false is normal for no results; only map real driver errors
+        if (false === $this->result && $stmt->errno !== 0) {
+            throw DatabaseErrorMapper::createException(
+                'Mysqli Error: (' . $stmt->errno . '). ' . $stmt->error,
+                $stmt->sqlstate !== '' ? $stmt->sqlstate : null,
+                $stmt->errno
+            );
+        }
     }
 
     /**

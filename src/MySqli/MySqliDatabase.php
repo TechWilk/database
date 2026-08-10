@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\MySqli;
 
+use TechWilk\Database\DatabaseErrorMapper;
 use TechWilk\Database\DatabaseInterface;
-use TechWilk\Database\Exception\DatabaseDeadlockException;
 use TechWilk\Database\Exception\DatabaseException;
-use TechWilk\Database\Exception\DuplicateDatabaseRecordException;
-use TechWilk\Database\Exception\EmptyQueryException;
-use TechWilk\Database\Exception\InvalidTableException;
 use TechWilk\Database\MySqlSecureTableField;
 use TechWilk\Database\ParseDataArray;
 use TechWilk\Database\Query;
@@ -38,13 +35,21 @@ class MySqliDatabase implements DatabaseInterface
             $host = 'p:' . $host;
         }
 
-        $this->mysqli = new \mysqli($host, $username, $password, $database, $port);
-
-        if ($this->mysqli->connect_errno !== 0) {
-            throw new DatabaseException('Failed to connect to MySQL: (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error, $this->mysqli->connect_errno);
-        }
-
         mysqli_report($errorReportingLevel);
+
+        try {
+            $this->mysqli = new \mysqli($host, $username, $password, $database, $port);
+
+            if ($this->mysqli->connect_errno !== 0) {
+                throw self::createExceptionFromMysqliError(
+                    (string) $this->mysqli->connect_error,
+                    $this->mysqli->connect_errno,
+                    $this->mysqli->sqlstate,
+                );
+            }
+        } catch (\mysqli_sql_exception $e) {
+            throw self::createExceptionFromMysqliException($e);
+        }
     }
 
     /**
@@ -68,7 +73,11 @@ class MySqliDatabase implements DatabaseInterface
             $stmt = $this->mysqli->prepare($sql);
 
             if (false === $stmt) {
-                $this->throwDatabaseException($this->mysqli->error, $this->mysqli->errno);
+                throw self::createExceptionFromMysqliError(
+                    $this->mysqli->error,
+                    $this->mysqli->errno,
+                    $this->mysqli->sqlstate,
+                );
             }
 
             if ($params !== []) {
@@ -88,18 +97,31 @@ class MySqliDatabase implements DatabaseInterface
                     }
                 }
 
-                $stmt->bind_param($typeString, ...$typeParamArray);
+                if (!$stmt->bind_param($typeString, ...$typeParamArray)) {
+                    throw self::createExceptionFromMysqliError(
+                        $stmt->error,
+                        $stmt->errno,
+                        $stmt->sqlstate,
+                    );
+                }
             }
 
             if (!$stmt->execute()) {
-                $this->throwDatabaseException($stmt->error, $stmt->errno);
+                throw self::createExceptionFromMysqliError(
+                    $stmt->error,
+                    $stmt->errno,
+                    $stmt->sqlstate,
+                );
             }
 
             return new MySqliDatabaseResult(
                 $stmt
             );
-        } catch (\mysqli_sql_exception $mysqlisqlexception) {
-            $this->throwDatabaseException($mysqlisqlexception->getMessage(), $mysqlisqlexception->getCode(), $mysqlisqlexception);
+        } catch (\mysqli_sql_exception $e) {
+            throw self::createExceptionFromMysqliException(
+                $e,
+                $this->mysqli->sqlstate,
+            );
         }
     }
 
@@ -358,21 +380,43 @@ class MySqliDatabase implements DatabaseInterface
         return (int) $this->mysqli->insert_id;
     }
 
-    private function throwDatabaseException(string $message, int $code, \Throwable $previous = null): void
-    {
-        $errorMessage = 'Mysqli Error: (' . $code . '). ' . $message;
-        switch ($code) {
-            case 1062:
-                throw new DuplicateDatabaseRecordException($errorMessage, $code, $previous);
-            case 1213:
-                throw new DatabaseDeadlockException($errorMessage, $code, $previous);
-            case 1146:
-                throw new InvalidTableException($errorMessage, $code, $previous);
-            case 1065:
-                throw new EmptyQueryException($errorMessage, $code, $previous);
-            default:
-                throw new DatabaseException($errorMessage, $code, $previous);
-        }
+    /**
+     * Map a MySQLi errno/error/sqlstate triple to a typed library exception.
+     *
+     * Sole place that builds the library message for MySQLi driver failures so
+     * false-return and exception report modes stay consistent.
+     */
+    protected static function createExceptionFromMysqliError(
+        string $error,
+        int $errno,
+        ?string $sqlState,
+        ?\Throwable $previous = null
+    ): DatabaseException {
+        return DatabaseErrorMapper::createException(
+            'Mysqli Error: (' . $errno . '). ' . $error,
+            ($sqlState !== null && $sqlState !== '') ? $sqlState : null,
+            $errno,
+            $previous
+        );
+    }
+
+    /**
+     * Unwrap {@see \mysqli_sql_exception} and map via {@see createExceptionFromMysqliError()}.
+     */
+    protected static function createExceptionFromMysqliException(
+        \mysqli_sql_exception $exception,
+        ?string $fallbackSqlState = null
+    ): DatabaseException {
+        $sqlState = method_exists($exception, 'getSqlState')
+            ? $exception->getSqlState()
+            : $fallbackSqlState;
+
+        return self::createExceptionFromMysqliError(
+            $exception->getMessage(),
+            (int) $exception->getCode(),
+            $sqlState,
+            $exception
+        );
     }
 
     public function __destruct()

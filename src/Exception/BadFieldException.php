@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\Exception;
 
-class BadFieldException extends DatabaseException
+/**
+ * Thrown when a table or field name is invalid for quoting.
+ *
+ * @see DatabaseQueryException::SQLSTATE_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION
+ */
+class BadFieldException extends DatabaseQueryException
 {
-    public function __construct($message, $code = 0, \Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
 }

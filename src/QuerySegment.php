@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database;
 
 use TechWilk\Database\Exception\BadValueException;
+use TechWilk\Database\Exception\DatabaseQueryException;
 
 final class QuerySegment
 {
@@ -89,7 +90,10 @@ final class QuerySegment
     public static function fieldIn(string $field, array $values, string $tablePrefix = ''): self
     {
         if ([] === $values) {
-            throw new BadValueException('Invalid value for SQL IN statement');
+            throw new BadValueException(
+                'Invalid value for SQL IN statement',
+                DatabaseQueryException::SQLSTATE_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION,
+            );
         }
 
         $sql = $tablePrefix === '' ? '' : '`' . $tablePrefix . '`.';
