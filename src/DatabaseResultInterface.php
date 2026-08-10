@@ -28,7 +28,7 @@ interface DatabaseResultInterface
      *
      * @throws DatabaseException
      */
-    public function fetchArray($type): ?array;
+    public function fetchArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array;
 
     /**
      * Fetches all rows.
@@ -49,7 +49,7 @@ interface DatabaseResultInterface
      *
      * @throws DatabaseException
      */
-    public function fetchAllArray(): array;
+    public function fetchAllArray(ArrayFetchType $type = ArrayFetchType::ASSOC): array;
 
     /**
      * Fetch Column.
@@ -107,7 +107,7 @@ interface DatabaseResultInterface
      *
      * @see self::fetchArray()
      */
-    public function getArray($type): ?array;
+    public function getArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array;
 
     /**
      * Alias for fetchColumn().

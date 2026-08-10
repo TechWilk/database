@@ -6,6 +6,7 @@ namespace TechWilk\Database\MySqli;
 
 use stdClass;
 use TechWilk\Database\AbstractDatabaseResult;
+use TechWilk\Database\ArrayFetchType;
 use TechWilk\Database\DatabaseErrorMapper;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
@@ -53,9 +54,15 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type = MYSQLI_ASSOC): ?array
+    public function fetchArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array
     {
         $this->checkResult('Cannot call fetchArray without a result');
+
+        $type = match ($type) {
+            ArrayFetchType::ASSOC => MYSQLI_ASSOC,
+            ArrayFetchType::NUM => MYSQLI_NUM,
+            ArrayFetchType::BOTH => MYSQLI_BOTH,
+        };
 
         return $this->result->fetch_array($type) ?? false;
     }

@@ -42,11 +42,11 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
     /**
      * Fetches all rows as an array.
      */
-    public function fetchAllArray(): array
+    public function fetchAllArray(ArrayFetchType $type = ArrayFetchType::ASSOC): array
     {
         $data = [];
         for ($i = 0; $i < $this->rowCount(); ++$i) {
-            $data[] = $this->fetchArray();
+            $data[] = $this->fetchArray($type);
         }
 
         return $data;
@@ -89,7 +89,7 @@ abstract class AbstractDatabaseResult implements DatabaseResultInterface
      *
      * @see self::fetchArray()
      */
-    public function getArray($type): ?array
+    public function getArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array
     {
         return $this->fetchArray($type);
     }

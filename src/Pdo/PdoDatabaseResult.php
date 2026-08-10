@@ -6,6 +6,7 @@ namespace TechWilk\Database\Pdo;
 
 use stdClass;
 use TechWilk\Database\AbstractDatabaseResult;
+use TechWilk\Database\ArrayFetchType;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
 
@@ -33,8 +34,14 @@ class PdoDatabaseResult extends AbstractDatabaseResult implements DatabaseResult
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type = \PDO::FETCH_ASSOC): ?array
+    public function fetchArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array
     {
+        $type = match ($type) {
+            ArrayFetchType::ASSOC => \PDO::FETCH_ASSOC,
+            ArrayFetchType::NUM => \PDO::FETCH_NUM,
+            ArrayFetchType::BOTH => \PDO::FETCH_BOTH,
+        };
+
         $array = $this->stmt->fetch($type);
 
         if (false === $array) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database\Fake;
 
 use TechWilk\Database\AbstractDatabaseResult;
+use TechWilk\Database\ArrayFetchType;
 use TechWilk\Database\DatabaseResultInterface;
 use TechWilk\Database\Exception\DatabaseException;
 
@@ -26,7 +27,7 @@ class FakeDatabaseResult extends AbstractDatabaseResult implements DatabaseResul
     /**
      * Fetches next row as an array.
      */
-    public function fetchArray($type): ?array
+    public function fetchArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array
     {
         return $this->returnData;
     }
