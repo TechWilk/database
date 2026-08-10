@@ -68,7 +68,7 @@ interface DatabaseInterface
      * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
      */
-    public function selectAndUpdate(string $table, array $data, array|string $where): int;
+    public function insertOrUpdate(string $table, array $data, array|string $where): int;
 
     /**
      * Create and execute DELETE statement.

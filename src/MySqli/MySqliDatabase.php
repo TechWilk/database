@@ -260,7 +260,7 @@ class MySqliDatabase implements DatabaseInterface
      * @param array        $data  to update (key => value pairs)
      * @param array|string $where (key => value pairs)
      */
-    public function selectAndUpdate(string $table, array $data, $where): int
+    public function insertOrUpdate(string $table, array $data, $where): int
     {
         $fields = array_keys($data);
         $fields = array_map(self::class . '::secureTableField', $fields);

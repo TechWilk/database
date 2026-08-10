@@ -121,7 +121,7 @@ Available functions:
 - `update`
 - `updateUsingIn`
 - `updateChanges`
-- `selectAndUpdate`
+- `insertOrUpdate`
 - `query`
 - `runQuery`
 
