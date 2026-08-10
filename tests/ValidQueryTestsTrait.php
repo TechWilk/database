@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TechWilk\Database\Tests;
 
+use TechWilk\Database\ArrayFetchType;
+
 trait ValidQueryTestsTrait
 {
     public function testSelectWithoutParameters(): void
@@ -38,6 +40,51 @@ trait ValidQueryTestsTrait
                 'string' => 'this is some text',
             ],
         ], $result->fetchAllArray());
+    }
+
+    public function testSelectWithParametersAndFetchAllArrayAssoc(): void
+    {
+        $parameters = [1];
+        $result = $this->database->query('SELECT * FROM `table` WHERE id = ?', $parameters);
+
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'date' => '2020-01-01 00:00:00',
+                'string' => 'this is some text',
+            ],
+        ], $result->fetchAllArray(ArrayFetchType::ASSOC));
+    }
+
+    public function testSelectWithParametersAndFetchAllArrayNum(): void
+    {
+        $parameters = [1];
+        $result = $this->database->query('SELECT * FROM `table` WHERE id = ?', $parameters);
+
+        $this->assertEquals([
+            [
+                1,
+                '2020-01-01 00:00:00',
+                'this is some text',
+            ],
+        ], $result->fetchAllArray(ArrayFetchType::NUM));
+    }
+
+    public function testSelectWithParametersAndFetchAllArrayBoth(): void
+    {
+        $parameters = [1];
+        $result = $this->database->query('SELECT * FROM `table` WHERE id = ?', $parameters);
+
+        $this->assertEquals([
+            [
+                0 => 1,
+                'id' => 1,
+                1 => '2020-01-01 00:00:00',
+                'date' => '2020-01-01 00:00:00',
+                2 => 'this is some text',
+                'string' => 'this is some text',
+            ],
+        ], $result->fetchAllArray(ArrayFetchType::BOTH));
     }
 
     public function testInsert(): void
