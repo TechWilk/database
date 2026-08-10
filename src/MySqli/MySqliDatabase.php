@@ -17,20 +17,27 @@ class MySqliDatabase implements DatabaseInterface
     use ParseDataArray;
     use MySqlSecureTableField;
 
-    /**
-     * @var \Mysqli
-     */
-    protected \mysqli $mysqli;
-
     public function __construct(
+        protected \mysqli $mysqli
+    ) {
+        if ($this->mysqli->connect_errno !== 0) {
+            throw self::createExceptionFromMysqliError(
+                (string) $this->mysqli->connect_error,
+                $this->mysqli->connect_errno,
+                $this->mysqli->sqlstate,
+            );
+        }
+    }
+
+    public static function connect(
         string $host,
         string $database,
         string $username,
         string $password,
         int $errorReportingLevel = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
         bool $usePersistentConnection = false,
-        int $port = null
-    ) {
+        ?int $port = null
+    ): self {
         if ($usePersistentConnection) {
             $host = 'p:' . $host;
         }
@@ -38,15 +45,17 @@ class MySqliDatabase implements DatabaseInterface
         mysqli_report($errorReportingLevel);
 
         try {
-            $this->mysqli = new \mysqli($host, $username, $password, $database, $port);
+            $mysqli = new \mysqli($host, $username, $password, $database, $port);
 
-            if ($this->mysqli->connect_errno !== 0) {
+            if ($mysqli->connect_errno !== 0) {
                 throw self::createExceptionFromMysqliError(
-                    (string) $this->mysqli->connect_error,
-                    $this->mysqli->connect_errno,
-                    $this->mysqli->sqlstate,
+                    (string) $mysqli->connect_error,
+                    $mysqli->connect_errno,
+                    $mysqli->sqlstate,
                 );
             }
+
+            return new self($mysqli);
         } catch (\mysqli_sql_exception $e) {
             throw self::createExceptionFromMysqliException($e);
         }

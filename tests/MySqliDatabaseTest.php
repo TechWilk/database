@@ -17,14 +17,14 @@ class MySqliDatabaseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->database = new MySqliDatabase(
-            getenv('MYSQL_HOST'),
-            getenv('MYSQL_DATABASE'),
-            getenv('MYSQL_USER'),
-            getenv('MYSQL_PASSWORD'),
-            MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
-            false,
-            (int) getenv('MYSQL_PORT'),
+        $this->database = MySqliDatabase::connect(
+            host: getenv('MYSQL_HOST'),
+            database: getenv('MYSQL_DATABASE'),
+            username: getenv('MYSQL_USER'),
+            password: getenv('MYSQL_PASSWORD'),
+            errorReportingLevel: MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
+            usePersistentConnection: false,
+            port: (int) getenv('MYSQL_PORT'),
         );
 
         // reset the schema

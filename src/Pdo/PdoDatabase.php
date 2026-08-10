@@ -18,20 +18,24 @@ class PdoDatabase implements DatabaseInterface
     use MySqlSecureTableField;
     use ParseDataArray;
 
-    protected \PDO $pdo;
-
     private bool $logQueries = false;
 
     private array $queries = [];
 
     public function __construct(
+        protected \PDO $pdo,
+    ) {
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
+
+    public static function connectToMySql(
         string $host,
         string $database,
         string $username,
         string $password,
         bool $usePersistentConnection = false,
         int $port = null
-    ) {
+    ): self {
         $dsn = 'mysql:' . implode(';', [
             'host=' . $host,
             'dbname=' . $database,
@@ -40,10 +44,12 @@ class PdoDatabase implements DatabaseInterface
         ]);
 
         try {
-            $this->pdo = new \PDO($dsn, $username, $password, [
+            $pdo = new \PDO($dsn, $username, $password, [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_PERSISTENT => $usePersistentConnection,
             ]);
+
+            return new self($pdo);
         } catch (\PDOException $pdoException) {
             throw self::createExceptionFromPdoException($pdoException);
         }

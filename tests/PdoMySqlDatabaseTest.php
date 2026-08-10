@@ -7,7 +7,7 @@ namespace TechWilk\Database\Tests;
 use PHPUnit\Framework\TestCase;
 use TechWilk\Database\Pdo\PdoDatabase;
 
-class PdoDatabaseTest extends TestCase
+class PdoMySqlDatabaseTest extends TestCase
 {
     use ValidQueryTestsTrait;
     use InvalidQueryTestsTrait;
@@ -17,13 +17,13 @@ class PdoDatabaseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->database = new PdoDatabase(
-            getenv('MYSQL_HOST'),
-            getenv('MYSQL_DATABASE'),
-            getenv('MYSQL_USER'),
-            getenv('MYSQL_PASSWORD'),
-            false,
-            (int) getenv('MYSQL_PORT'),
+        $this->database = PdoDatabase::connectToMySql(
+            host: getenv('MYSQL_HOST'),
+            database: getenv('MYSQL_DATABASE'),
+            username: getenv('MYSQL_USER'),
+            password: getenv('MYSQL_PASSWORD'),
+            usePersistentConnection: false,
+            port: (int) getenv('MYSQL_PORT'),
         );
 
         // reset the schema
