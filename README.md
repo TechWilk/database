@@ -12,7 +12,7 @@ For select statements and other complex queries you are expected to write raw pa
 ```php
 use TechWilk\Database\MySqli\MySqliDatabase;
 
-$database = new MySqliDatabase(
+$database = MySqliDatabase::connect(
     'localhost',
     'database-name',
     'username',
