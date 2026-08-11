@@ -306,7 +306,7 @@ class PdoDatabase implements DatabaseInterface
         $finalWhereSegment = $whereSegment->withSegment($dataSegment)->withSegment($closingSegment);
 
         $query = Query::fromSegments([
-            new QuerySegment('UPDATE ' . $this->secureTableField($table) . ' SET '),
+            new QuerySegment('DELETE FROM ' . $this->secureTableField($table)),
             $finalWhereSegment,
         ]);
 
