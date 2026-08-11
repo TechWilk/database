@@ -118,6 +118,12 @@ class DatabaseErrorMapperTest extends TestCase
                 CheckConstraintException::class,
                 IntegrityConstraintException::class,
             ],
+            'check constraint mariadb' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                CheckConstraintException::MARIADB_ER_CONSTRAINT_FAILED,
+                CheckConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
             'deadlock errno' => [
                 DatabaseDeadlockException::SQLSTATE_SERIALIZATION_FAILURE,
                 DatabaseDeadlockException::MYSQL_ER_LOCK_DEADLOCK,

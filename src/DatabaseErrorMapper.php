@@ -100,6 +100,7 @@ final class DatabaseErrorMapper
                 return new ForeignKeyConstraintException($message, $sqlState, $driverCode, $previous);
 
             case CheckConstraintException::MYSQL_ER_CHECK_CONSTRAINT_VIOLATED:
+            case CheckConstraintException::MARIADB_ER_CONSTRAINT_FAILED:
                 return new CheckConstraintException($message, $sqlState, $driverCode, $previous);
 
             case DatabaseDeadlockException::MYSQL_ER_LOCK_DEADLOCK:
