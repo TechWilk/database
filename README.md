@@ -184,7 +184,10 @@ To learn more, see `TechWilk\Database\DatabaseErrorMapper`.
     - `DatabaseTransactionRollbackException`
         - `DatabaseDeadlockException`
     - `IntegrityConstraintException`
+        - `CheckConstraintException`
         - `DuplicateDatabaseRecordException`
+        - `ForeignKeyConstraintException`
+        - `NullConstraintException`
 
 ### Notes
 
@@ -212,7 +215,7 @@ To learn more, see `TechWilk\Database\DatabaseErrorMapper`.
 - `podman exec -it database-percona mysql -uroot -p`
 - mysql> `CREATE DATABASE tests;`
 - mysql> ```CREATE USER `tests`@`%` IDENTIFIED BY 'create-random-password-here';```
-- mysql> ```GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER ON tests.* TO `tests`@`%`;```
+- mysql> ```GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER,REFERENCES,INDEX ON tests.* TO `tests`@`%`;```
 - mysql> `FLUSH PRIVILEGES;`
 - mysql> `exit`
 

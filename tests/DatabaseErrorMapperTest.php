@@ -9,6 +9,7 @@ use TechWilk\Database\DatabaseErrorMapper;
 use TechWilk\Database\Exception\{
     BadFieldException,
     BadValueException,
+    CheckConstraintException,
     DatabaseAccessDeniedException,
     DatabaseConnectionException,
     DatabaseDataException,
@@ -23,8 +24,10 @@ use TechWilk\Database\Exception\{
     DatabaseTransactionRollbackException,
     DuplicateDatabaseRecordException,
     EmptyQueryException,
+    ForeignKeyConstraintException,
     IntegrityConstraintException,
     InvalidTableException,
+    NullConstraintException,
 };
 
 class DatabaseErrorMapperTest extends TestCase
@@ -55,10 +58,64 @@ class DatabaseErrorMapperTest extends TestCase
     public static function mappedErrorsProvider(): array
     {
         return [
-            'duplicate errno' => [
+            'duplicate errno 1022' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                DuplicateDatabaseRecordException::MYSQL_ER_DUP_KEY,
+                DuplicateDatabaseRecordException::class,
+                IntegrityConstraintException::class,
+            ],
+            'duplicate errno 1062' => [
                 IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
                 DuplicateDatabaseRecordException::MYSQL_ER_DUP_ENTRY,
                 DuplicateDatabaseRecordException::class,
+                IntegrityConstraintException::class,
+            ],
+            'duplicate errno 1169' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                DuplicateDatabaseRecordException::MYSQL_ER_DUP_UNIQUE,
+                DuplicateDatabaseRecordException::class,
+                IntegrityConstraintException::class,
+            ],
+            'duplicate errno 1586' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                DuplicateDatabaseRecordException::MYSQL_ER_DUP_ENTRY_WITH_KEY_NAME,
+                DuplicateDatabaseRecordException::class,
+                IntegrityConstraintException::class,
+            ],
+            'null constraint' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                NullConstraintException::MYSQL_ER_BAD_NULL_ERROR,
+                NullConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
+            'foreign key errno 1216' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                ForeignKeyConstraintException::MYSQL_ER_NO_REFERENCED_ROW,
+                ForeignKeyConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
+            'foreign key errno 1217' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                ForeignKeyConstraintException::MYSQL_ER_ROW_IS_REFERENCED,
+                ForeignKeyConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
+            'foreign key errno 1451' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                ForeignKeyConstraintException::MYSQL_ER_ROW_IS_REFERENCED_2,
+                ForeignKeyConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
+            'foreign key errno 1452' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                ForeignKeyConstraintException::MYSQL_ER_NO_REFERENCED_ROW_2,
+                ForeignKeyConstraintException::class,
+                IntegrityConstraintException::class,
+            ],
+            'check constraint' => [
+                IntegrityConstraintException::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION,
+                CheckConstraintException::MYSQL_ER_CHECK_CONSTRAINT_VIOLATED,
+                CheckConstraintException::class,
                 IntegrityConstraintException::class,
             ],
             'deadlock errno' => [
@@ -225,6 +282,30 @@ class DatabaseErrorMapperTest extends TestCase
         $this->assertInstanceOf(
             IntegrityConstraintException::class,
             new DuplicateDatabaseRecordException('x')
+        );
+    }
+
+    public function testParentOfNullConstraint(): void
+    {
+        $this->assertInstanceOf(
+            IntegrityConstraintException::class,
+            new NullConstraintException('x')
+        );
+    }
+
+    public function testParentOfForeignKeyConstraint(): void
+    {
+        $this->assertInstanceOf(
+            IntegrityConstraintException::class,
+            new ForeignKeyConstraintException('x')
+        );
+    }
+
+    public function testParentOfCheckConstraint(): void
+    {
+        $this->assertInstanceOf(
+            IntegrityConstraintException::class,
+            new CheckConstraintException('x')
         );
     }
 

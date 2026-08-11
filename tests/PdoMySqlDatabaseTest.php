@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database\Tests;
 
 use PHPUnit\Framework\TestCase;
+use TechWilk\Database\DatabaseInterface;
 use TechWilk\Database\Pdo\PdoDatabase;
 
 class PdoMySqlDatabaseTest extends TestCase
@@ -12,29 +13,39 @@ class PdoMySqlDatabaseTest extends TestCase
     use ValidQueryTestsTrait;
     use InvalidQueryTestsTrait;
     use DatabaseServerExceptionTestsTrait;
+    use MySqlConnectionExceptionTestsTrait;
+    use LoadsSqlSeeds;
 
     protected $database;
 
+    protected function connectToMySql(
+        string $host,
+        string $database,
+        string $username,
+        string $password,
+        int $port,
+    ): DatabaseInterface {
+        return PdoDatabase::connectToMySql(
+            host: $host,
+            database: $database,
+            username: $username,
+            password: $password,
+            usePersistentConnection: false,
+            port: $port,
+        );
+    }
+
     protected function setUp(): void
     {
-        $this->database = PdoDatabase::connectToMySql(
-            host: getenv('MYSQL_HOST'),
-            database: getenv('MYSQL_DATABASE'),
-            username: getenv('MYSQL_USER'),
-            password: getenv('MYSQL_PASSWORD'),
-            usePersistentConnection: false,
-            port: (int) getenv('MYSQL_PORT'),
+        $this->database = $this->connectToMySql(
+            (string) getenv('MYSQL_HOST'),
+            (string) getenv('MYSQL_DATABASE'),
+            (string) getenv('MYSQL_USER'),
+            (string) getenv('MYSQL_PASSWORD'),
+            (int) getenv('MYSQL_PORT'),
         );
 
         // reset the schema
-        $sqlContent = file_get_contents(__DIR__ . '/data/seeds.sql');
-        $sqlStatements = explode(';', $sqlContent);
-        foreach ($sqlStatements as $sql) {
-            if (trim($sql) === '') {
-                continue;
-            }
-
-            $this->database->query($sql);
-        }
+        $this->loadSeedFile('seeds.sql');
     }
 }

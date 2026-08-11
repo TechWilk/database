@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TechWilk\Database;
 
 use TechWilk\Database\Exception\{
+    CheckConstraintException,
     DatabaseAccessDeniedException,
     DatabaseConnectionException,
     DatabaseDataException,
@@ -20,8 +21,10 @@ use TechWilk\Database\Exception\{
     DatabaseTransactionRollbackException,
     DuplicateDatabaseRecordException,
     EmptyQueryException,
+    ForeignKeyConstraintException,
     IntegrityConstraintException,
     InvalidTableException,
+    NullConstraintException,
 };
 
 final class DatabaseErrorMapper
@@ -81,8 +84,23 @@ final class DatabaseErrorMapper
             case DatabaseObjectNotFoundException::MYSQL_ER_NO_DB_ERROR:
                 return new DatabaseObjectNotFoundException($message, $sqlState, $driverCode, $previous);
 
+            case DuplicateDatabaseRecordException::MYSQL_ER_DUP_KEY:
             case DuplicateDatabaseRecordException::MYSQL_ER_DUP_ENTRY:
+            case DuplicateDatabaseRecordException::MYSQL_ER_DUP_UNIQUE:
+            case DuplicateDatabaseRecordException::MYSQL_ER_DUP_ENTRY_WITH_KEY_NAME:
                 return new DuplicateDatabaseRecordException($message, $sqlState, $driverCode, $previous);
+
+            case NullConstraintException::MYSQL_ER_BAD_NULL_ERROR:
+                return new NullConstraintException($message, $sqlState, $driverCode, $previous);
+
+            case ForeignKeyConstraintException::MYSQL_ER_NO_REFERENCED_ROW:
+            case ForeignKeyConstraintException::MYSQL_ER_ROW_IS_REFERENCED:
+            case ForeignKeyConstraintException::MYSQL_ER_ROW_IS_REFERENCED_2:
+            case ForeignKeyConstraintException::MYSQL_ER_NO_REFERENCED_ROW_2:
+                return new ForeignKeyConstraintException($message, $sqlState, $driverCode, $previous);
+
+            case CheckConstraintException::MYSQL_ER_CHECK_CONSTRAINT_VIOLATED:
+                return new CheckConstraintException($message, $sqlState, $driverCode, $previous);
 
             case DatabaseDeadlockException::MYSQL_ER_LOCK_DEADLOCK:
                 return new DatabaseDeadlockException($message, $sqlState, $driverCode, $previous);

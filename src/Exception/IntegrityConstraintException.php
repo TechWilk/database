@@ -9,11 +9,15 @@ namespace TechWilk\Database\Exception;
  *
  * This is a category parent. Available children are:
  *
+ * @see CheckConstraintException
  * @see DuplicateDatabaseRecordException
+ * @see ForeignKeyConstraintException
+ * @see NullConstraintException
  *
  * SQLSTATE and driver specific error codes:
  *
  * @see self::SQLSTATE_CLASS
+ * @see self::SQLSTATE_INTEGRITY_CONSTRAINT_VIOLATION
  */
 class IntegrityConstraintException extends DatabaseException
 {
