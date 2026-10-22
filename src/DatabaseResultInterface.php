@@ -26,6 +26,11 @@ interface DatabaseResultInterface
     /**
      * Fetches next row.
      *
+     * @return (
+     *     $type is ArrayFetchType::ASSOC ? array<string, mixed> :
+     *     ($type is ArrayFetchType::NUM ? array<int, mixed> : array<int|string, mixed>)
+     * )|null
+     *
      * @throws DatabaseException
      */
     public function fetchArray(ArrayFetchType $type = ArrayFetchType::ASSOC): ?array;
@@ -46,6 +51,11 @@ interface DatabaseResultInterface
 
     /**
      * Fetches all rows.
+     *
+     * @return (
+     *     $type is ArrayFetchType::ASSOC ? array<string, mixed> :
+     *     ($type is ArrayFetchType::NUM ? array<int, mixed> : array<int|string, mixed>)
+     * )[]
      *
      * @throws DatabaseException
      */
@@ -104,6 +114,11 @@ interface DatabaseResultInterface
 
     /**
      * Alias for fetchArray().
+     *
+     * @return (
+     *     $type is ArrayFetchType::ASSOC ? array<string, mixed> :
+     *     ($type is ArrayFetchType::NUM ? array<int, mixed> : array<int|string, mixed>)
+     * )|null
      *
      * @see self::fetchArray()
      */
