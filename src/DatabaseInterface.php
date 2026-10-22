@@ -15,7 +15,7 @@ interface DatabaseInterface
      * Perform SQL query.
      *
      * @param string  $sql    with question mark syntax for parameters
-     * @param array<string, mixed> $params
+     * @param array $params
      */
     public function query(string $sql, array $params = []): DatabaseResultInterface;
 
