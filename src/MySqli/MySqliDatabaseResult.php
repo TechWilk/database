@@ -45,10 +45,10 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
         $this->checkResult('Cannot call fetchObject without a result');
 
         if (\stdClass::class === $className) {
-            return $this->result->fetch_object() ?? false;
+            return $this->result->fetch_object();
         }
 
-        return $this->result->fetch_object($className, $params) ?? false;
+        return $this->result->fetch_object($className, $params);
     }
 
     /**
@@ -64,7 +64,7 @@ class MySqliDatabaseResult extends AbstractDatabaseResult implements DatabaseRes
             ArrayFetchType::BOTH => MYSQLI_BOTH,
         };
 
-        return $this->result->fetch_array($type) ?? false;
+        return $this->result->fetch_array($type);
     }
 
     /**

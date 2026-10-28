@@ -43,6 +43,18 @@ trait ValidQueryTestsTrait
         ], $result->fetchAllArray());
     }
 
+    public function testFetchArrayReturnsNullWhenThereIsNoRow(): void
+    {
+        $missing = $this->database->query('SELECT * FROM `table` WHERE id = ?', [999]);
+
+        $this->assertNull($missing->fetchArray());
+
+        $found = $this->database->query('SELECT * FROM `table` WHERE id = ?', [1]);
+
+        $this->assertIsArray($found->fetchArray());
+        $this->assertNull($found->fetchArray());
+    }
+
     public function testRunQuery(): void
     {
         $query = new Query('SELECT * FROM `table` WHERE id = ?', [1]);
